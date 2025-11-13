@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Estágios</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+    </style>
+</head>
+<body class="min-h-screen transition-colors duration-300">
+
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+            <h1 class="text-3xl font-bold">📋 Informações de Estágios</h1>
+            
+            <div class="flex gap-3 items-center">
+                <!-- Botão de tema -->
+                <button id="themeToggle" class="p-2.5 rounded-lg transition-all duration-200 hover:scale-110">
+                    <span id="themeIcon">🌙</span>
+                </button>
+                
+                <!-- Botão de recarregar -->
+                <button id="refreshBtn" class="px-4 py-2.5 rounded-lg font-medium transition-all duration-200 hover:scale-105">
+                    🔄 Recarregar
+                </button>
+            </div>
+        </div>
+
+        <!-- Barra de pesquisa e filtros -->
+        <div class="mb-6 space-y-4">
+            <input type="text" id="searchInput" placeholder="🔍 Pesquisar por empresa, vaga, localização..." 
+                class="w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2">
+            
+            <div class="flex gap-3 flex-wrap">
+                <select id="filterColumn" class="px-4 py-2 rounded-lg border-2 transition-all">
+                    <option value="">Filtrar por coluna...</option>
+                </select>
+                <button id="clearFilters" class="px-4 py-2 rounded-lg font-medium transition-all hover:scale-105">
+                    ✖️ Limpar Filtros
+                </button>
+            </div>
+        </div>
+
+        <!-- Status e contador -->
+        <div id="statusMessage" class="mb-4 p-4 rounded-lg font-medium text-center"></div>
+        <div id="counter" class="mb-4 text-center font-semibold"></div>
+
+        <!-- Tabela responsiva -->
+        <div class="overflow-x-auto rounded-lg shadow-lg">
+            <table id="dataTable" class="w-full">
+                <thead>
+                    <tr id="tableHeader"></tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2"></div>
+            <p class="mt-4 font-medium">Carregando dados...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBdUtPoAbOkVCGOBeVRgsq5jZXNOur0f_4",
+            authDomain: "internship-infos.firebaseapp.com",
+            projectId: "internship-infos",
+            storageBucket: "internship-infos.firebasestorage.app",
+            messagingSenderId: "642232016135",
+            appId: "1:642232016135:web:e2b5645ed285dd73a439a2",
+            measurementId: "G-HVFS7M6XEC"
+        };
+
+        let db, auth;
+        let allData = [];
+        let filteredData = [];
+        let isDarkMode = true;
+
+        const elements = {
+            body: document.body,
+            themeToggle: document.getElementById('themeToggle'),
+            themeIcon: document.getElementById('themeIcon'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            searchInput: document.getElementById('searchInput'),
+            filterColumn: document.getElementById('filterColumn'),
+            clearFilters: document.getElementById('clearFilters'),
+            statusMessage: document.getElementById('statusMessage'),
+            counter: document.getElementById('counter'),
+            tableHeader: document.getElementById('tableHeader'),
+            tableBody: document.getElementById('tableBody'),
+            loading: document.getElementById('loading'),
+            dataTable: document.getElementById('dataTable')
+        };
+
+        // Aplicar tema
+        function applyTheme() {
+            if (isDarkMode) {
+                elements.body.className = 'min-h-screen bg-gray-900 text-white';
+                elements.themeIcon.textContent = '☀️';
+                elements.refreshBtn.className = 'px-4 py-2.5 rounded-lg font-medium bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200 hover:scale-105';
+                elements.searchInput.className = 'w-full px-4 py-3 rounded-lg border-2 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200';
+                elements.filterColumn.className = 'px-4 py-2 rounded-lg border-2 bg-gray-800 border-gray-700 text-white transition-all';
+                elements.clearFilters.className = 'px-4 py-2 rounded-lg font-medium bg-red-600 hover:bg-red-700 text-white transition-all hover:scale-105';
+                elements.themeToggle.className = 'p-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition-all duration-200 hover:scale-110';
+            } else {
+                elements.body.className = 'min-h-screen bg-gray-50 text-gray-900';
+                elements.themeIcon.textContent = '🌙';
+                elements.refreshBtn.className = 'px-4 py-2.5 rounded-lg font-medium bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200 hover:scale-105';
+                elements.searchInput.className = 'w-full px-4 py-3 rounded-lg border-2 bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200';
+                elements.filterColumn.className = 'px-4 py-2 rounded-lg border-2 bg-white border-gray-300 text-gray-900 transition-all';
+                elements.clearFilters.className = 'px-4 py-2 rounded-lg font-medium bg-red-500 hover:bg-red-600 text-white transition-all hover:scale-105';
+                elements.themeToggle.className = 'p-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 transition-all duration-200 hover:scale-110';
+            }
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        }
+
+        // Inicializar tema
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            isDarkMode = savedTheme === 'dark';
+        }
+        applyTheme();
+
+        elements.themeToggle.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            applyTheme();
+            renderTable(filteredData);
+        });
+
+        // Inicializar Firebase
+        async function initializeFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                await new Promise((resolve, reject) => {
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            console.log("Usuário autenticado:", user.uid);
+                            resolve(user);
+                        }
+                    }, reject);
+                    signInAnonymously(auth).catch(reject);
+                });
+
+                await loadData();
+            } catch (error) {
+                console.error("Erro ao inicializar Firebase:", error);
+                showStatus("Erro ao conectar com o Firebase.", "error");
+            }
+        }
+
+        // Carregar dados
+        async function loadData() {
+            try {
+                elements.loading.style.display = 'block';
+                elements.dataTable.style.display = 'none';
+                
+                const querySnapshot = await getDocs(collection(db, 'internship-infos'));
+                allData = [];
+                
+                querySnapshot.forEach((doc) => {
+                    allData.push({ id: doc.id, ...doc.data() });
+                });
+
+                if (allData.length === 0) {
+                    showStatus("Nenhum dado encontrado no Firebase.", "warning");
+                    elements.loading.style.display = 'none';
+                    return;
+                }
+
+                filteredData = [...allData];
+                populateFilterOptions();
+                renderTable(filteredData);
+                updateCounter();
+                showStatus(`✅ ${allData.length} registros carregados com sucesso!`, "success");
+                
+                elements.loading.style.display = 'none';
+                elements.dataTable.style.display = 'table';
+            } catch (error) {
+                console.error("Erro ao carregar dados:", error);
+                showStatus("Erro ao carregar dados: " + error.message, "error");
+                elements.loading.style.display = 'none';
+            }
+        }
+
+        // Preencher opções de filtro
+        function populateFilterOptions() {
+            if (allData.length === 0) return;
+            
+            const columns = Object.keys(allData[0]).filter(key => key !== 'id');
+            elements.filterColumn.innerHTML = '<option value="">Todas as colunas</option>';
+            
+            columns.forEach(col => {
+                const option = document.createElement('option');
+                option.value = col;
+                option.textContent = col;
+                elements.filterColumn.appendChild(option);
+            });
+        }
+
+        // Renderizar tabela
+        function renderTable(data) {
+            if (data.length === 0) {
+                elements.tableBody.innerHTML = '<tr><td colspan="100" class="text-center py-8">Nenhum dado para exibir</td></tr>';
+                return;
+            }
+
+            const columns = Object.keys(data[0]).filter(key => key !== 'id');
+            
+            // Header
+            elements.tableHeader.innerHTML = columns.map(col => 
+                `<th class="px-4 py-3 text-left font-semibold ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}">${col}</th>`
+            ).join('');
+
+            // Body
+            elements.tableBody.innerHTML = data.map((row, index) => {
+                const bgClass = isDarkMode 
+                    ? (index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-750') 
+                    : (index % 2 === 0 ? 'bg-white' : 'bg-gray-50');
+                
+                return `<tr class="${bgClass} hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} transition-colors">
+                    ${columns.map(col => `<td class="px-4 py-3 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}">${row[col] ?? 'N/A'}</td>`).join('')}
+                </tr>`;
+            }).join('');
+        }
+
+        // Filtrar dados
+        function filterData() {
+            const searchTerm = elements.searchInput.value.toLowerCase();
+            const selectedColumn = elements.filterColumn.value;
+
+            filteredData = allData.filter(row => {
+                const searchColumns = selectedColumn ? [selectedColumn] : Object.keys(row).filter(k => k !== 'id');
+                
+                return searchColumns.some(col => {
+                    const value = String(row[col] ?? '').toLowerCase();
+                    return value.includes(searchTerm);
+                });
+            });
+
+            renderTable(filteredData);
+            updateCounter();
+        }
+
+        // Atualizar contador
+        function updateCounter() {
+            elements.counter.textContent = `Mostrando ${filteredData.length} de ${allData.length} registros`;
+        }
+
+        // Mostrar status
+        function showStatus(message, type) {
+            const colors = {
+                success: isDarkMode ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
+                error: isDarkMode ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
+                warning: isDarkMode ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800'
+            };
+            
+            elements.statusMessage.textContent = message;
+            elements.statusMessage.className = `mb-4 p-4 rounded-lg font-medium text-center ${colors[type] || ''}`;
+            
+            setTimeout(() => {
+                elements.statusMessage.textContent = '';
+                elements.statusMessage.className = 'mb-4 p-4 rounded-lg font-medium text-center';
+            }, 5000);
+        }
+
+        // Event listeners
+        elements.searchInput.addEventListener('input', filterData);
+        elements.filterColumn.addEventListener('change', filterData);
+        elements.clearFilters.addEventListener('click', () => {
+            elements.searchInput.value = '';
+            elements.filterColumn.value = '';
+            filterData();
+        });
+        elements.refreshBtn.addEventListener('click', loadData);
+
+        // Inicializar
+        initializeFirebase();
+    </script>
+</body>
+</html>

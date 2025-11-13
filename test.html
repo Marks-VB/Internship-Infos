@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-br" class=""> <!-- A classe 'dark' será adicionada aqui via JS -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informações de Estágios</title>
+    <!-- Carrega o Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carrega a fonte Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Transição suave de cores ao trocar de tema */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* Estilo para a barra de rolagem (opcional, mas melhora o visual dark) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        html.dark ::-webkit-scrollbar-track {
+            background: #2d3748; /* gray-800 -> slate-800 (via tw) */
+        }
+        html.dark ::-webkit-scrollbar-thumb {
+            background: #718096; /* gray-500 -> slate-500 (via tw) */
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-gray-900 dark:text-gray-100 min-h-screen">
+
+    <!-- Cabeçalho -->
+    <header class="bg-white/80 dark:bg-slate-900/80 shadow-md sticky top-0 z-10 backdrop-blur-lg">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+            <!-- Título -->
+            <h1 class="text-xl font-bold text-blue-600 dark:text-blue-400">Visão Geral dos Estados</h1>
+            
+            <!-- Botão de Alternar Tema -->
+            <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <!-- Ícone de Sol (Modo Claro) -->
+                <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <!-- Ícone de Lua (Modo Escuro) -->
+                <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Contêiner Principal -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- Indicador de Carregamento -->
+        <div id="loadingIndicator" class="text-center py-10">
+            <p class="text-lg font-medium text-gray-600 dark:text-gray-400">Carregando dados do Firebase...</p>
+        </div>
+
+        <!-- Contêiner dos Cards -->
+        <div id="cardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Os cards serão inseridos aqui via JavaScript -->
+        </div>
+
+    </main>
+
+    <!-- Modal da Gemini API -->
+    <div id="geminiModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-lg w-full m-4 overflow-hidden transform transition-all duration-300 border border-transparent dark:border-slate-700">
+            <!-- Cabeçalho do Modal -->
+            <div class="flex justify-between items-center p-4 border-b dark:border-slate-700">
+                <h3 id="modalTitle" class="text-lg font-semibold text-blue-600 dark:text-blue-400">Análise da IA</h3>
+                <button id="modalCloseBtn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <!-- Conteúdo do Modal -->
+            <div class="p-6 max-h-[70vh] overflow-y-auto">
+                <!-- Indicador de Carregamento -->
+                <div id="modalLoading" class="text-center hidden">
+                    <svg class="animate-spin h-8 w-8 text-blue-600 dark:text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">A processar... Por favor, aguarde.</p>
+                </div>
+                <!-- Área de Resposta -->
+                <div id="modalContent" class="text-sm text-gray-700 dark:text-gray-300 max-w-none">
+                    <!-- A resposta da Gemini API será inserida aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Script do Firebase e Lógica da Aplicação -->
+    <script type="module">
+        // ... existing code ... -->
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Configuração da Gemini API ---
+        const geminiApiKey = ""; // Deixado em branco, como instruído. A plataforma injetará a chave.
+        const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiApiKey}`;
+        
+        // --- Configuração do Firebase ---
+        // (A mesma configuração do seu script de upload)
+        // ... existing code ... -->
+        let db, auth;
+
+        // --- Elementos do DOM ---
+        const themeToggle = document.getElementById('themeToggle');
+        // ... existing code ... -->
+        const htmlEl = document.documentElement;
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const cardsContainer = document.getElementById('cardsContainer');
+
+        // --- Elementos do Modal (Adicionados) ---
+        const geminiModal = document.getElementById('geminiModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modalContent');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const modalLoading = document.getElementById('modalLoading');
+
+
+        // --- Lógica de Alternância de Tema ---
+        
+        /**
+        // ... existing code ... -->
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+            applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+
+        // --- Lógica do Firebase ---
+
+        /**
+        // ... existing code ... -->
+         * Renderiza os cards na tela com base nos dados.
+         */
+        function renderCards(states) {
+        // ... existing code ... -->
+            states.forEach(state => {
+                const card = createStateCard(state);
+                cardsContainer.appendChild(card);
+            });
+        }
+
+        /**
+        // ... existing code ... -->
+         * Cria um elemento HTML (card) para um estado.
+         */
+        function createStateCard(data) {
+            const card = document.createElement('div');
+            card.className = "bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between border border-transparent dark:border-slate-700";
+            
+            // Helper para criar uma linha de informação
+            const infoLine = (label, value) => {
+                // Não renderiza a linha se o valor for N/C ou nulo
+                if (value === 'N/C' || value === null || value === undefined) return '';
+                return `
+                    <div class="mt-2 flex justify-between items-center">
+                        <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">${label}</p>
+                        <p class="text-sm text-gray-800 dark:text-gray-200 text-right">${value}</p>
+                    </div>
+                `;
+            };
+
+            // --- Visualização de Dados Aprimorada ---
+
+            // 1. Helper para Salário Mínimo
+            const salarioMinimo = (data['Salário Mínimo por Hora (USD)'] !== 'N/C' && data['Salário Mínimo por Hora (USD)'] > 0) 
+                ? `$${Number(data['Salário Mínimo por Hora (USD)']).toFixed(2)}<span class="text-xs text-gray-500 dark:text-gray-400">/hora</span>`
+                : '<span class="text-2xl">N/C</span>';
+
+            // 2. Helper para Custo de Vida (com cores)
+            const getCostOfLiving = (index) => {
+                if (index === 'N/C' || index === null) return '<span class="text-2xl text-gray-500 dark:text-gray-400">N/C</span>';
+                const val = Number(index);
+                let colorClass = 'text-yellow-600 dark:text-yellow-400'; // Média
+                if (val > 110) colorClass = 'text-red-500 font-bold'; // Alto Custo
+                if (val < 95) colorClass = 'text-green-600 dark:text-green-400 font-bold'; // Baixo Custo
+                return `<span class="text-2xl ${colorClass}">${val}</span>`;
+            };
+            const custoDeVida = getCostOfLiving(data['Índice de Custo de Vida']);
+
+            // Escapa o JSON para uso seguro em um atributo HTML
+            const safeStateJson = JSON.stringify(data).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+
+            card.innerHTML = `
+                <div>
+                    <div class="p-5">
+                        <!-- Cabeçalho do Card -->
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400">${data.Estado || 'Sem Nome'}</h2>
+                            <span class="bg-slate-100 dark:bg-slate-700 text-blue-800 dark:text-blue-200 text-sm font-bold px-3 py-1 rounded-full flex-shrink-0 ml-2">${data['Sigla do Estado'] || ''}</span>
+                        </div>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">${data['Breve Descrição (Apelido)'] || ''}</p>
+                    </div>
+
+                    <!-- Visualização de Stats Principais -->
+                    <div class="grid grid-cols-2 gap-4 px-5 pb-4 border-b border-slate-200 dark:border-slate-700">
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Custo de Vida</p>
+                            ${custoDeVida}
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Salário Mínimo</p>
+                            <p class="text-2xl font-bold text-gray-800 dark:text-gray-200">${salarioMinimo}</p>
+                        </div>
+                    </div>
+
+                    <!-- Corpo do Card - Mais Infos -->
+                    <div class="p-5">
+                         <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Mais Informações</h4>
+                        ${infoLine('Destaque', data['Destaque Principal'])}
+                        ${infoLine('Ambiente Acadêmico', data['Ambiente Acadêmico (Geral)'])}
+                        ${infoLine('Clima', data['Clima (Geral)'])}
+                        ${infoLine('Neve', data['Notas sobre Neve'])}
+                    </div>
+                </div>
+
+                <!-- Botão da Gemini API (no fundo) -->
+                <div class="p-5 pt-0 mt-auto">
+                    <button class="gemini-btn w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                        data-state-json='${safeStateJson}'>
+                        ✨ Análise Rápida (IA)
+                    </button>
+                </div>
+            `;
+            return card;
+        }
+
+        // --- Lógica da Gemini API ---
+
+        /**
+         * Mostra ou esconde o modal.
+         */
+        function toggleModal(show) {
+            if (show) {
+                geminiModal.classList.remove('hidden');
+            } else {
+                geminiModal.classList.add('hidden');
+            }
+        }
+
+        /**
+         * Converte texto Markdown simples (usado pela IA) em HTML.
+         */
+        function simpleMarkdownToHtml(text) {
+            let html = text
+                .replace(/^## (.*)$/gm, '<h3 class="text-lg font-semibold mt-4 mb-2 text-gray-900 dark:text-gray-100">$1</h3>')
+                .replace(/^\* (.*)$/gm, '<li>$1</li>')
+                .replace(/(\n|\r\n)+/g, '<br>'); // Substitui novas linhas por <br>
+
+            // Agrupa <li> em <ul> e remove <br> entre eles
+            html = html.replace(/(<li>.*?<\/li>)/gs, (match) => {
+                 let items = match.replace(/<\/li><br><li>/g, '</li><li>');
+                return `<ul class="space-y-1 list-outside list-disc ml-5">${items}</ul>`;
+            });
+
+             // Remove <br> extras entre listas e títulos
+            html = html.replace(/<\/ul><br><ul>/g, '</ul><ul>');
+            html = html.replace(/<\/h3><br>/g, '</h3>');
+            html = html.replace(/<\/ul><br>/g, '</ul>');
+            html = html.replace(/<br><ul>/g, '<ul>');
+            html = html.replace(/<br><h3/g, '<h3');
+            
+            return html;
+        }
+
+
+        /**
+         * Busca informações da API Gemini com base nos dados do estado.
+         */
+        async function fetchGeminiInfo(stateData) {
+            toggleModal(true);
+            modalTitle.textContent = `Análise Rápida: ${stateData.Estado}`;
+            modalContent.innerHTML = '';
+            modalLoading.classList.remove('hidden');
+
+            // Recalcula o salário mínimo para o prompt
+            const salarioMinimo = (stateData['Salário Mínimo por Hora (USD)'] !== 'N/C' && stateData['Salário Mínimo por Hora (USD)'] > 0) 
+                ? `$${Number(stateData['Salário Mínimo por Hora (USD)']).toFixed(2)}/hora`
+                : 'Não aplicável';
+
+            const systemPrompt = `Você é um assistente de carreira e mentor para estudantes que procuram estágios nos EUA.
+Seja conciso, útil e use um tom encorajador.
+Formate sua resposta obrigatoriamente usando Markdown simples (títulos com ##, listas com *).
+Responda sempre em Português do Brasil.`;
+            
+            const userQuery = `Estou a analisar o estado ${stateData.Estado} (${stateData['Sigla do Estado']}).
+            Tenho os seguintes dados:
+            - Destaque Principal: ${stateData['Destaque Principal']}
+            - Custo de Vida (Índice): ${stateData['Índice de Custo de Vida']}
+            - Salário Mínimo: ${salarioMinimo}
+            - Ambiente Acadêmico: ${stateData['Ambiente Acadêmico (Geral)']}
+            - Clima: ${stateData['Clima (Geral)']}
+
+            Por favor, gera um resumo para um estudante (potencialmente internacional) sobre estagiar aqui.
+            O resumo deve incluir:
+            ## Prós
+            * (Liste 2-3 prós, considerando os dados)
+            ## Contras
+            * (Liste 2-3 contras, considerando os dados)
+            ## Oportunidades
+            * (Liste 3-4 empresas ou indústrias chave para estágios, com base no "Destaque Principal")
+            `;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            // Implementa retry simples e backoff para a API
+            let response;
+            let retries = 3;
+            let delay = 1000; // 1 segundo
+
+            while (retries > 0) {
+                try {
+                    response = await fetch(geminiApiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        break; // Sucesso, sai do loop
+                    }
+
+                    if (response.status === 429 || response.status >= 500) {
+                        // Erro de "Too Many Requests" ou erro de servidor
+                        console.warn(`API Rate limit ou erro. Tentando novamente em ${delay}ms...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2; // Backoff exponencial
+                        retries--;
+                    } else {
+                        // Outro erro (ex: 400 Bad Request), não tenta novamente
+                        throw new Error(`Erro da API: ${response.status} ${response.statusText}`);
+                    }
+
+                } catch (error) {
+                    // Erro de rede
+                    console.warn(`Erro de rede. Tentando novamente em ${delay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2;
+                    retries--;
+                    if (retries === 0) {
+                         throw new Error(`Falha na rede após várias tentativas: ${error.message}`);
+                    }
+                }
+            }
+
+            if (!response || !response.ok) {
+                 throw new Error("Não foi possível conectar à API Gemini após várias tentativas.");
+            }
+
+            try {
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const text = candidate.content.parts[0].text;
+                    modalContent.innerHTML = simpleMarkdownToHtml(text);
+                } else {
+                    // Verifica se a resposta foi bloqueada
+                    if (candidate?.finishReason === 'SAFETY') {
+                        throw new Error("A resposta foi bloqueada por motivos de segurança.");
+                    }
+                    throw new Error("Resposta da API inválida ou vazia.");
+                }
+
+            } catch (error) {
+                console.error("Erro ao processar a resposta da API Gemini:", error);
+                modalContent.innerHTML = `<p class="text-red-500 dark:text-red-400"><strong>Erro:</strong> Não foi possível obter a análise da IA.</p><p class="mt-2 text-xs text-gray-500 dark:text-gray-400">${error.message}</p>`;
+            } finally {
+                modalLoading.classList.add('hidden');
+            }
+        }
+
+
+        // --- Inicialização da Aplicação ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTheme();
+            initializeFirebase();
+
+            // Listeners do Modal
+            modalCloseBtn.addEventListener('click', () => toggleModal(false));
+            geminiModal.addEventListener('click', (e) => {
+                // Fecha o modal se clicar no overlay (fundo)
+                if (e.target === geminiModal) {
+                    toggleModal(false);
+                }
+            });
+
+            // Event Delegation para os botões dos cards
+            cardsContainer.addEventListener('click', (e) => {
+                const button = e.target.closest('.gemini-btn');
+                if (button) {
+                    try {
+                        // Corrige o parsing do JSON
+                        const stateDataString = button.dataset.stateJson.replace(/&quot;/g, '"');
+                        const stateData = JSON.parse(stateDataString);
+                        fetchGeminiInfo(stateData);
+                    } catch (err) {
+                        console.error("Erro ao ler dados do estado do botão:", err);
+                        // Não usar alert()
+                        modalContent.innerHTML = `<p class="text-red-500 dark:text-red-400"><strong>Erro:</strong> Ocorreu um erro ao tentar ler os dados deste estado.</p>`;
+                        toggleModal(true);
+                    }
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>

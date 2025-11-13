@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload de CSV para Firebase</title>
+    <!-- Carrega o Tailwind CSS para estilização -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-2xl">
+        <h1 class="text-2xl font-bold mb-4 text-center">Upload de CSV para o Firestore</h1>
+        <p class="text-gray-400 mb-6 text-center">Cole o conteúdo completo do seu arquivo <code class="bg-gray-700 px-1 rounded">infos.csv</code> abaixo e clique em "Fazer Upload".</p>
+
+        <!-- Área para colar o CSV -->
+        <textarea id="csvData"
+            class="w-full h-64 bg-gray-700 text-gray-200 rounded-md p-4 font-mono text-sm border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            placeholder="Cole o conteúdo do CSV aqui..."></textarea>
+
+        <!-- Botão de Upload -->
+        <button id="uploadButton"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md mt-6 transition-all duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed">
+            Fazer Upload dos Dados
+        </button>
+
+        <!-- Mensagem de Status -->
+        <div id="statusMessage" class="mt-4 text-center font-medium"></div>
+    </div>
+
+    <!-- Script do Firebase -->
+    <script type="module">
+        // Importações necessárias do Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, writeBatch, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Configuração do Firebase ---
+        // ATENÇÃO: A sua chave de API (apiKey) está visível aqui.
+        // Para um app em produção, restrinja-a no console do Firebase.
+        const firebaseConfig = {
+            apiKey: "AIzaSyBdUtPoAbOkVCGOBeVRgsq5jZXNOur0f_4",
+            authDomain: "internship-infos.firebaseapp.com",
+            projectId: "internship-infos",
+            storageBucket: "internship-infos.firebasestorage.app",
+            messagingSenderId: "642232016135",
+            appId: "1:642232016135:web:e2b5645ed285dd73a439a2",
+            measurementId: "G-HVFS7M6XEC"
+        };
+        
+        // Como não estamos no ambiente do Canvas, o token inicial será nulo
+        // e o login anônimo será usado.
+        const initialAuthToken = null;
+
+        let db, auth, userId;
+
+        // --- Elementos do DOM ---
+        const csvDataEl = document.getElementById('csvData');
+        const uploadButtonEl = document.getElementById('uploadButton');
+        const statusMessageEl = document.getElementById('statusMessage');
+
+        /**
+         * Inicializa o Firebase e autentica o usuário.
+         */
+        async function initializeFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                setLogLevel('Debug'); // Habilita logs para depuração
+
+                // Espera o estado de autenticação
+                await new Promise((resolve, reject) => {
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            userId = user.uid;
+                            console.log("Usuário autenticado (anônimo):", userId);
+                            resolve(user);
+                        } else {
+                            console.log("Nenhum usuário logado, tentando autenticar...");
+                        }
+                    }, reject);
+
+                    // Tenta login anônimo, já que não há token inicial
+                    signInAnonymously(auth).catch((err) => {
+                         console.error("Erro no login anônimo:", err);
+                         reject(err);
+                    });
+                });
+
+                console.log("Firebase pronto e autenticado.");
+                statusMessageEl.textContent = "Firebase pronto. Cole seu CSV.";
+                statusMessageEl.className = "mt-4 text-center font-medium text-green-400";
+
+            } catch (error) {
+                console.error("Erro ao inicializar o Firebase:", error);
+                statusMessageEl.textContent = "Erro ao conectar com o Firebase.";
+                statusMessageEl.className = "mt-4 text-center font-medium text-red-400";
+                uploadButtonEl.disabled = true;
+            }
+        }
+
+        /**
+         * Faz o parsing do texto CSV para um array de objetos.
+         * Lida com vírgulas dentro de aspas.
+         */
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return [];
+
+            // Remove o carriage return (\r) dos cabeçalhos, se houver
+            const headers = lines[0].split(',').map(h => h.trim().replace(/\r$/, ''));
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim() === "") continue;
+
+                const values = [];
+                let currentVal = '';
+                let inQuotes = false;
+
+                // Processa caractere por caractere para lidar com aspas
+                for (let j = 0; j < lines[i].length; j++) {
+                    const char = lines[i][j];
+
+                    if (char === '"') {
+                        // Se o próximo caractere for aspas (escape), pula um
+                        if (lines[i][j+1] === '"') {
+                             currentVal += '"';
+                             j++; // Pula o próximo caractere
+                        } else {
+                            inQuotes = !inQuotes;
+                        }
+                    } else if (char === ',' && !inQuotes) {
+                        values.push(currentVal.trim());
+                        currentVal = '';
+                    } else {
+                        currentVal += char;
+                    }
+                }
+                values.push(currentVal.trim().replace(/\r$/, '')); // Adiciona o último valor
+
+                if (values.length === headers.length) {
+                    const obj = {};
+                    headers.forEach((header, index) => {
+                        let val = values[index];
+                        
+                        // Remove aspas do início e fim, se existirem
+                        if (val.startsWith('"') && val.endsWith('"')) {
+                            val = val.substring(1, val.length - 1);
+                        }
+
+                        // Tenta converter para número se parecer um
+                        if (!isNaN(val) && val.trim() !== "" && val !== "N/C") {
+                            obj[header] = Number(val);
+                        } else {
+                            obj[header] = val;
+                        }
+                    });
+                    data.push(obj);
+                } else {
+                    console.warn(`Linha mal formatada pulada (esperava ${headers.length} colunas, obteve ${values.length}):`, lines[i]);
+                }
+            }
+            return data;
+        }
+
+        /**
+         * Pega os dados do textarea, faz o parse e envia para o Firestore.
+         */
+        async function handleUpload() {
+            if (!db || !userId) {
+                statusMessageEl.textContent = "Firebase não está pronto. Tente novamente.";
+                statusMessageEl.className = "mt-4 text-center font-medium text-red-400";
+                return;
+            }
+
+            const csvText = csvDataEl.value;
+            if (!csvText.trim()) {
+                statusMessageEl.textContent = "Por favor, cole algum dado CSV.";
+                statusMessageEl.className = "mt-4 text-center font-medium text-yellow-400";
+                return;
+            }
+
+            uploadButtonEl.disabled = true;
+            statusMessageEl.textContent = "Processando e fazendo upload... Por favor, aguarde.";
+            statusMessageEl.className = "mt-4 text-center font-medium text-yellow-400";
+
+            try {
+                // 1. Fazer o Parse dos dados
+                const data = parseCSV(csvText);
+                if (data.length === 0) {
+                    throw new Error("Nenhum dado válido encontrado no CSV.");
+                }
+
+                console.log(`Dados processados: ${data.length} registros encontrados.`);
+
+                // 2. Definir o caminho da coleção (uma coleção raiz no seu projeto)
+                const collectionName = 'internship-infos';
+                const collectionRef = collection(db, collectionName);
+                
+                // 3. Usar um WriteBatch para eficiência
+                const batch = writeBatch(db);
+                
+                data.forEach(item => {
+                    // Cria uma referência para um novo documento com ID automático
+                    const docRef = doc(collectionRef); 
+                    // Adiciona a operação de "set" ao batch
+                    batch.set(docRef, item);
+                });
+
+                // 4. Comitar o batch
+                await batch.commit();
+
+                // 5. Sucesso
+                statusMessageEl.textContent = `Sucesso! ${data.length} documentos foram enviados para a coleção '${collectionName}'.`;
+                statusMessageEl.className = "mt-4 text-center font-medium text-green-400";
+                csvDataEl.value = ""; // Limpa o textarea
+
+            } catch (error) {
+                console.error("Erro durante o upload:", error);
+                statusMessageEl.textContent = `Erro no upload: ${error.message}`;
+                statusMessageEl.className = "mt-4 text-center font-medium text-red-400";
+            } finally {
+                uploadButtonEl.disabled = false;
+            }
+        }
+
+        // --- Inicialização ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFirebase();
+            uploadButtonEl.addEventListener('click', handleUpload);
+        });
+
+    </script>
+</body>
+</html>
