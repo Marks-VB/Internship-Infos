@@ -1,433 +1,1080 @@
 <!DOCTYPE html>
-<html lang="pt-br" class=""> <head>
+<html lang="pt-BR">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Informações de Estágios</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Guia de Estados EUA</title>
+    
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <style>
+        :root {
+            /* Cores Modernas (Indigo/Slate Theme) */
+            --bg-gradient-start: #f8fafc;
+            --bg-gradient-end: #e2e8f0;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --card-bg: #ffffff;
+            --primary: #6366f1; /* Indigo 500 */
+            --primary-hover: #4f46e5;
+            --primary-light: #e0e7ff;
+            --success: #10b981;
+            --border: #cbd5e1;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --header-bg: rgba(255, 255, 255, 0.90);
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            
+            /* AI Colors */
+            --ai-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            --ai-glow: 0 0 15px rgba(168, 85, 247, 0.4);
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-end: #1e293b;
+            --text-main: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --card-bg: #1e293b;
+            --primary: #818cf8;
+            --primary-hover: #6366f1;
+            --primary-light: rgba(99, 102, 241, 0.2);
+            --border: #475569;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+            --header-bg: rgba(15, 23, 42, 0.90);
+            --ai-glow: 0 0 15px rgba(168, 85, 247, 0.6);
+        }
+
+        * { box-sizing: border-box; }
+
         body {
-            font-family: 'Inter', sans-serif;
-            /* Transição suave de cores ao trocar de tema */
-            transition: background-color 0.3s ease, color 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+            padding-bottom: 100px;
         }
-        /* Estilo para a barra de rolagem (opcional, mas melhora o visual dark) */
-        ::-webkit-scrollbar {
-            width: 8px;
+
+        /* --- Header --- */
+        header {
+            background-color: var(--header-bg);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 15px;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: flex-end;
         }
-        html.dark ::-webkit-scrollbar-track {
-            background: #2d3748; /* gray-800 -> slate-800 (via tw) */
+
+        /* AI Button Style */
+        .btn-ai {
+            background: var(--ai-gradient);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: var(--ai-glow);
+            font-size: 0.9rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            white-space: nowrap;
         }
-        html.dark ::-webkit-scrollbar-thumb {
-            background: #718096; /* gray-500 -> slate-500 (via tw) */
+        .btn-ai:hover {
+            transform: translateY(-2px) scale(1.02);
+            filter: brightness(1.1);
+        }
+        .btn-ai:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Standard Controls */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 250px; /* Reduced to fit AI btn */
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border-radius: 50px;
+            border: 2px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        button.theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: transform 0.2s, background 0.2s;
+        }
+        button.theme-toggle:hover {
+            transform: rotate(15deg);
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        /* --- Filter Bar --- */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px; 
+            width: 100%;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .filter-bar::-webkit-scrollbar { height: 4px; }
+        .filter-bar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .filter-select {
+            appearance: none;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 32px 8px 16px; 
+            border-radius: 20px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: 500;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .filter-select:hover, .filter-select:focus {
+            border-color: var(--primary);
+            background-color: var(--bg-gradient-start);
+        }
+        
+        .filter-select.active {
+            background-color: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary-hover);
+            font-weight: 700;
+        }
+
+        .results-count {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-left: auto;
+            white-space: nowrap;
+            align-self: center;
+        }
+
+        /* --- Grid & Cards --- */
+        .container {
+            max-width: 1280px;
+            margin: 30px auto;
+            padding: 0 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            padding: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding-right: 30px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-main);
+            line-height: 1.2;
+        }
+
+        .card-id {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            background: var(--bg-gradient-end);
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        /* Checkmark de Seleção */
+        .selection-indicator {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background-color: transparent;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .card:hover .selection-indicator {
+            border-color: var(--primary);
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .card.selected .selection-indicator {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: #ffffff;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Badges */
+        .badge-container { margin-bottom: 16px; }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .cost-Baixo { background: #dcfce7; color: #15803d; }
+        .cost-Médio { background: #fef9c3; color: #a16207; }
+        .cost-Alto { background: #ffedd5; color: #c2410c; }
+        .cost-Muito { background: #fee2e2; color: #b91c1c; }
+        
+        [data-theme="dark"] .cost-Baixo { background: rgba(22, 163, 74, 0.2); color: #4ade80; }
+        [data-theme="dark"] .cost-Médio { background: rgba(202, 138, 4, 0.2); color: #facc15; }
+        [data-theme="dark"] .cost-Alto { background: rgba(234, 88, 12, 0.2); color: #fb923c; }
+        [data-theme="dark"] .cost-Muito { background: rgba(220, 38, 38, 0.2); color: #f87171; }
+
+        /* Detalhes */
+        .details-grid { display: grid; gap: 10px; }
+        .detail-item {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border);
+        }
+        .detail-item:last-child { border-bottom: none; }
+        .detail-icon { font-size: 1.1rem; width: 24px; text-align: center; display:inline-block;}
+
+        .select-hint {
+            margin-top: auto;
+            padding-top: 15px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.2s;
+        }
+        .card:hover .select-hint, .card.selected .select-hint { 
+            opacity: 1; transform: translateY(0); 
+        }
+
+        /* FAB */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px); 
+            background: var(--primary);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+        }
+        .fab.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .fab:hover { background-color: var(--primary-hover); transform: translateX(-50%) translateY(-2px); }
+
+        /* Modal Generico */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 300;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .modal.show { opacity: 1; }
+        .modal-content {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 1200px;
+            height: 90%;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border);
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        .modal.show .modal-content { transform: scale(1); }
+        
+        /* Modal AI Specific - smaller */
+        .modal-ai-content {
+            max-width: 600px;
+            height: auto;
+            max-height: 90vh;
+        }
+
+        .modal-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+        }
+        .modal-header h2 { margin: 0; font-size: 1.5rem; display:flex; align-items:center; gap:10px; }
+        .close-btn {
+            background: rgba(0,0,0,0.05);
+            border: none;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .close-btn:hover { background: rgba(0,0,0,0.1); color: #ef4444; }
+        .table-container { flex-grow: 1; overflow: auto; padding: 0; }
+        
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th, td { padding: 16px 24px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        th { background-color: var(--bg-gradient-start); position: sticky; top: 0; z-index: 10; font-weight: 600; color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; }
+        td:first-child { font-weight: 600; color: var(--text-main); background-color: var(--card-bg); position: sticky; left: 0; z-index: 5; box-shadow: 2px 0 5px rgba(0,0,0,0.05); width: 150px; }
+        th:first-child { left: 0; z-index: 20; background-color: var(--bg-gradient-start); }
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) td:not(:first-child) { background-color: rgba(0,0,0,0.01); }
+
+        /* AI Interface Styles */
+        .ai-chat-container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        
+        .ai-input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        textarea.ai-prompt {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background: var(--bg-gradient-start);
+            color: var(--text-main);
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+        }
+        textarea.ai-prompt:focus {
+            border-color: #8b5cf6;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        .ai-response {
+            background: var(--bg-gradient-start);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+            border: 1px solid var(--border);
+            display: none; /* Hidden by default */
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .ai-response.visible { display: block; animation: fadeIn 0.5s; }
+        
+        /* Markdown styles inside AI Response */
+        .ai-response h3 { margin-top: 0; color: #8b5cf6; }
+        .ai-response ul { padding-left: 20px; }
+        .ai-response li { margin-bottom: 8px; }
+        .ai-response strong { color: var(--text-main); }
+
+        .loading-sparkle {
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 600px) {
+            .header-top { flex-direction: column; align-items: stretch; }
+            .controls { justify-content: space-between; width: 100%; flex-wrap: wrap; }
+            .search-container { max-width: 100%; order: 2; width: 100%; }
+            .btn-ai { order: 1; width: 100%; justify-content: center; }
+            .filter-bar { padding-bottom: 10px; }
+            .fab { width: 90%; justify-content: center; bottom: 20px; }
+            .results-count { display: none; }
         }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-gray-900 dark:text-gray-100 min-h-screen">
+<body>
 
-    <header class="bg-white/80 dark:bg-slate-900/80 shadow-md sticky top-0 z-10 backdrop-blur-lg">
-        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
-            <h1 class="text-xl font-bold text-blue-600 dark:text-blue-400">Visão Geral dos Estados</h1>
-            
-            <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-                <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
+<header>
+    <div class="header-top">
+        <h1>🇺🇸 Estados EUA</h1>
+        <div class="controls">
+            <!-- AI Button in Header -->
+            <button class="btn-ai" id="aiAdvisorBtn">
+                ✨ Conselheiro IA
             </button>
-        </nav>
-    </header>
-
-    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
-
-        <div id="loadingIndicator" class="text-center py-10">
-            <p class="text-lg font-medium text-gray-600 dark:text-gray-400">Carregando dados do Firebase...</p>
-        </div>
-
-        <div id="cardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Buscar estado...">
             </div>
+            <button class="theme-toggle" id="themeBtn" aria-label="Alternar tema">🌓</button>
+        </div>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="filter-bar">
+        <select id="filterCusto" class="filter-select">
+            <option value="">💰 Custo (Todos)</option>
+            <option value="Baixo">💲 Baixo</option>
+            <option value="Médio">💲💲 Médio</option>
+            <option value="Alto">💲💲💲 Alto</option>
+        </select>
+        
+        <select id="filterClima" class="filter-select">
+            <option value="">🌡️ Clima (Todos)</option>
+            <option value="frio">❄️ Mais Frio / Neve</option>
+            <option value="quente">☀️ Mais Quente / Ameno</option>
+        </select>
+        
+        <select id="filterVibe" class="filter-select">
+            <option value="">🎭 Vibe (Todos)</option>
+            <option value="agitada">🎉 Agitada / Urbana</option>
+            <option value="natureza">🌲 Natureza / Relax</option>
+        </select>
 
-    </main>
+        <select id="filterSotaque" class="filter-select">
+            <option value="">🗣️ Sotaque (Todos)</option>
+            <option value="neutro">👌 Neutro / Padrão</option>
+            <option value="marcante">🤠 Marcante / Regional</option>
+        </select>
 
-    <div id="geminiModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 hidden">
-        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-lg w-full m-4 overflow-hidden transform transition-all duration-300 border border-transparent dark:border-slate-700">
-            <div class="flex justify-between items-center p-4 border-b dark:border-slate-700">
-                <h3 id="modalTitle" class="text-lg font-semibold text-blue-600 dark:text-blue-400">Análise da IA</h3>
-                <button id="modalCloseBtn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        <span class="results-count" id="resultsCount"></span>
+    </div>
+</header>
+
+<div class="container" id="statesGrid">
+    <p style="width:100%; text-align:center; color: var(--text-secondary); font-size: 1.1rem; padding-top: 50px;">
+        Carregando dados...
+    </p>
+</div>
+
+<!-- Botão Flutuante de Comparar -->
+<button class="fab" id="compareBtn">
+    <span>Comparar Estados</span>
+    <span style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:10px; font-size:0.8em" id="compareCount">0</span>
+</button>
+
+<!-- Modal de Comparação -->
+<div class="modal" id="compareModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Comparativo Completo</h2>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <!-- Botão AI dentro do Comparador -->
+                <button class="btn-ai" id="aiCompareActionBtn" style="font-size:0.8rem; padding: 8px 16px;">
+                    ✨ Analisar com IA
+                </button>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+        </div>
+        <div class="table-container" id="tableWrapper">
+            <!-- Tabela -->
+        </div>
+        <!-- Area de Resposta da IA no Modal de Comparação -->
+        <div id="compareAiResult" class="ai-response" style="margin: 20px; border-top: 2px dashed var(--border);"></div>
+    </div>
+</div>
+
+<!-- Modal AI Advisor (Conselheiro) -->
+<div class="modal" id="aiModal">
+    <div class="modal-content modal-ai-content">
+        <div class="modal-header">
+            <h2 style="background: var(--ai-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                ✨ Conselheiro de Intercâmbio
+            </h2>
+            <button class="close-btn" id="closeAiModal">&times;</button>
+        </div>
+        <div class="ai-chat-container">
+            <p style="color:var(--text-secondary)">
+                Não sabe para onde ir? Descreva seu perfil (ex: "gosto de frio e balada", "quero economizar e caminhar na natureza") e eu sugiro os melhores estados!
+            </p>
+            <div class="ai-input-area">
+                <textarea id="aiUserPrompt" class="ai-prompt" placeholder="Digite suas preferências aqui..."></textarea>
+                <button class="btn-ai" id="aiSubmitBtn" style="justify-content: center;">
+                    Consultar IA
                 </button>
             </div>
-            <div class="p-6 max-h-[70vh] overflow-y-auto">
-                <div id="modalLoading" class="text-center hidden">
-                    <svg class="animate-spin h-8 w-8 text-blue-600 dark:text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">A processar... Por favor, aguarde.</p>
-                </div>
-                <div id="modalContent" class="text-sm text-gray-700 dark:text-gray-300 max-w-none">
-                    </div>
+            <div id="aiAdvisorResult" class="ai-response">
+                <!-- Resposta vem aqui -->
             </div>
         </div>
     </div>
+</div>
 
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    const apiKey = ""; // Gemini API Key injected by environment
 
-        // --- Configuração da Gemini API (AGORA SEGURO VIA VERCEL API ROUTE) ---
-        // A CHAVE DE API FOI MOVIDA PARA O ARQUIVO api/gemini-analysis.js NO VERCEL.
-        const VERCEL_API_URL = '/api/gemini-analysis'; // Novo endpoint local no Vercel
-        
-        // --- Configuração do Firebase ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyBdUtPoAbOkVCGOBeVRgsq5jZXNOur0f_4",
-            authDomain: "internship-infos.firebaseapp.com",
-            projectId: "internship-infos",
-            storageBucket: "internship-infos.firebasestorage.app",
-            messagingSenderId: "642232016135",
-            appId: "1:642232016135:web:e2b5645ed285dd73a439a2",
-            measurementId: "G-HVFS7M6XEC"
+    const firebaseConfig = {
+        apiKey: "AIzaSyBdUtPoAbOkVCGOBeVRgsq5jZXNOur0f_4",
+        authDomain: "internship-infos.firebaseapp.com",
+        projectId: "internship-infos",
+        storageBucket: "internship-infos.firebasestorage.app",
+        messagingSenderId: "642232016135",
+        appId: "1:642232016135:web:e2b5645ed285dd73a439a2",
+        measurementId: "G-HVFS7M6XEC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let allStates = [];
+    let selectedStates = []; 
+
+    // DOM Elements
+    const grid = document.getElementById('statesGrid');
+    const searchInput = document.getElementById('searchInput');
+    const filterCusto = document.getElementById('filterCusto');
+    const filterClima = document.getElementById('filterClima');
+    const filterVibe = document.getElementById('filterVibe');
+    const filterSotaque = document.getElementById('filterSotaque');
+    const resultsCount = document.getElementById('resultsCount');
+    const compareBtn = document.getElementById('compareBtn');
+    const compareCount = document.getElementById('compareCount');
+    const compareModal = document.getElementById('compareModal');
+    const closeModal = document.getElementById('closeModal');
+    const tableWrapper = document.getElementById('tableWrapper');
+    const themeBtn = document.getElementById('themeBtn');
+
+    // AI DOM Elements
+    const aiAdvisorBtn = document.getElementById('aiAdvisorBtn');
+    const aiModal = document.getElementById('aiModal');
+    const closeAiModal = document.getElementById('closeAiModal');
+    const aiUserPrompt = document.getElementById('aiUserPrompt');
+    const aiSubmitBtn = document.getElementById('aiSubmitBtn');
+    const aiAdvisorResult = document.getElementById('aiAdvisorResult');
+    const aiCompareActionBtn = document.getElementById('aiCompareActionBtn');
+    const compareAiResult = document.getElementById('compareAiResult');
+
+    // --- Gemini API Logic ---
+    async function callGemini(prompt) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        const payload = {
+            contents: [{ parts: [{ text: prompt }] }]
         };
-        
-        let db, auth;
 
-        // --- Elementos do DOM ---
-        const themeToggle = document.getElementById('themeToggle');
-        const sunIcon = document.getElementById('sunIcon');
-        const moonIcon = document.getElementById('moonIcon');
-        const htmlEl = document.documentElement;
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const cardsContainer = document.getElementById('cardsContainer');
-
-        // --- Elementos do Modal (Adicionados) ---
-        const geminiModal = document.getElementById('geminiModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalContent = document.getElementById('modalContent');
-        const modalCloseBtn = document.getElementById('modalCloseBtn');
-        const modalLoading = document.getElementById('modalLoading');
-
-
-        // --- Lógica de Alternância de Tema ---
-        
-        function initializeTheme() {
-            // Verifica a preferência do sistema ou o que está no localStorage
-            const storedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            let currentTheme = 'light';
-            if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
-                currentTheme = 'dark';
-            }
-            applyTheme(currentTheme);
-        }
-
-        function applyTheme(theme) {
-            if (theme === 'dark') {
-                htmlEl.classList.add('dark');
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
-            } else {
-                htmlEl.classList.remove('dark');
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
-            }
-            localStorage.setItem('theme', theme);
-        }
-        
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
-            applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
-        });
-
-        // --- Lógica do Firebase ---
-
-        /**
-         * Inicializa o Firebase e carrega os dados.
-         */
-        async function initializeFirebase() {
-            try {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                // Autenticação anônima é usada para ler dados
-                await new Promise((resolve, reject) => {
-                    onAuthStateChanged(auth, (user) => {
-                        if (user) {
-                            resolve(user);
-                        }
-                    }, reject);
-                    signInAnonymously(auth).catch(reject);
-                });
-
-                await loadData();
-
-            } catch (error) {
-                console.error("Erro ao inicializar o Firebase:", error);
-                loadingIndicator.innerHTML = `<p class="text-lg font-medium text-red-600 dark:text-red-400">Erro ao carregar dados: ${error.message}</p>`;
-            }
-        }
-
-        /**
-         * Carrega os dados do Firestore.
-         */
-        async function loadData() {
-            try {
-                loadingIndicator.style.display = 'block';
-                cardsContainer.innerHTML = '';
-                
-                const querySnapshot = await getDocs(collection(db, 'internship-infos'));
-                const allData = [];
-                
-                querySnapshot.forEach((doc) => {
-                    allData.push({ id: doc.id, ...doc.data() });
-                });
-
-                loadingIndicator.style.display = 'none';
-
-                if (allData.length === 0) {
-                    cardsContainer.innerHTML = '<p class="text-lg font-medium text-gray-600 dark:text-gray-400 text-center">Nenhum dado de estágio encontrado.</p>';
-                    return;
-                }
-
-                renderCards(allData);
-
-            } catch (error) {
-                console.error("Erro ao carregar dados:", error);
-                loadingIndicator.innerHTML = `<p class="text-lg font-medium text-red-600 dark:text-red-400">Erro ao carregar dados: ${error.message}</p>`;
-            }
-        }
-
-
-        /**
-         * Renderiza os cards na tela com base nos dados.
-         */
-        function renderCards(states) {
-            states.forEach(state => {
-                const card = createStateCard(state);
-                cardsContainer.appendChild(card);
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
+
+            if (!response.ok) throw new Error(`Erro API: ${response.status}`);
+            
+            const data = await response.json();
+            return data.candidates?.[0]?.content?.parts?.[0]?.text || "Desculpe, não consegui gerar uma resposta.";
+        } catch (error) {
+            console.error("Gemini Error:", error);
+            // Retry logic simplified for single file constraint
+            return "Ocorreu um erro ao conectar com a IA. Tente novamente.";
+        }
+    }
+
+    // --- AI Event Listeners ---
+
+    // 1. Advisor (Matchmaker)
+    aiAdvisorBtn.onclick = () => {
+        aiModal.style.display = 'flex';
+        setTimeout(() => aiModal.classList.add('show'), 10);
+        aiUserPrompt.focus();
+    };
+
+    closeAiModal.onclick = () => {
+        aiModal.classList.remove('show');
+        setTimeout(() => aiModal.style.display = 'none', 300);
+    };
+
+    aiSubmitBtn.onclick = async () => {
+        const userText = aiUserPrompt.value.trim();
+        if (!userText) return;
+
+        // UI Loading State
+        aiSubmitBtn.disabled = true;
+        aiSubmitBtn.innerHTML = '<span class="loading-sparkle">✨</span> Pensando...';
+        aiAdvisorResult.classList.remove('visible');
+        aiAdvisorResult.innerHTML = '';
+
+        // Prepare Prompt
+        // We pass a simplified list of states to giving context to Gemini
+        const statesContext = allStates.map(s => `${s.nome} (${s.clima}, ${s.vibe_social}, custo: ${s.custo_visual})`).join('; ');
+        
+        const prompt = `
+            Atue como um especialista em intercâmbio nos EUA.
+            O usuário está procurando um estado com estas preferências: "${userText}".
+            Com base na sua base de conhecimento e nesta lista de estados disponíveis: [${statesContext}],
+            Recomende os 3 melhores estados para esse usuário.
+            Para cada estado, explique o motivo da escolha de forma curta e descontraída.
+            Use formatação Markdown (negrito, listas) e emojis. Responda em Português.
+        `;
+
+        const text = await callGemini(prompt);
+        
+        // Render Result
+        aiAdvisorResult.innerHTML = marked.parse(text);
+        aiAdvisorResult.classList.add('visible');
+        
+        // Reset Button
+        aiSubmitBtn.disabled = false;
+        aiSubmitBtn.textContent = 'Consultar Novamente';
+    };
+
+    // 2. Comparator Analysis
+    aiCompareActionBtn.onclick = async () => {
+        const statesToCompare = allStates.filter(s => selectedStates.includes(s.id));
+        if (statesToCompare.length < 2) return;
+
+        // UI Loading
+        aiCompareActionBtn.disabled = true;
+        aiCompareActionBtn.innerHTML = '<span class="loading-sparkle">✨</span> Analisando...';
+        compareAiResult.classList.remove('visible');
+        compareAiResult.innerHTML = '';
+
+        // Prompt
+        const jsonContext = JSON.stringify(statesToCompare.map(s => ({
+            nome: s.nome,
+            custo: s.custo_visual,
+            clima: s.clima,
+            vibe: s.vibe_social,
+            transporte: s.transporte_publico,
+            salario: s.salario
+        })));
+
+        const prompt = `
+            Compare estes estados selecionados para um intercambista: ${jsonContext}.
+            Crie um resumo comparativo "direto ao ponto" em formato Markdown.
+            1. Diga qual é o melhor para quem quer ECONOMIZAR.
+            2. Diga qual é o melhor para VIDA SOCIAL/FESTAS.
+            3. Dê um "Veredito Final" sugerindo qual escolher dependendo do perfil.
+            Use emojis e seja simpático.
+        `;
+
+        const text = await callGemini(prompt);
+
+        compareAiResult.innerHTML = marked.parse(text);
+        compareAiResult.classList.add('visible');
+        
+        // Scroll to result
+        compareAiResult.scrollIntoView({ behavior: 'smooth' });
+
+        aiCompareActionBtn.disabled = false;
+        aiCompareActionBtn.innerHTML = '✨ Analisar Novamente';
+    };
+
+
+    // --- Dark Mode ---
+    const toggleTheme = () => {
+        const body = document.body;
+        if (body.getAttribute('data-theme') === 'dark') {
+            body.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+        }
+    };
+    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.body.setAttribute('data-theme', 'dark');
+    }
+    themeBtn.addEventListener('click', toggleTheme);
+
+    // --- Data Fetching ---
+    async function fetchStates() {
+        try {
+            const querySnapshot = await getDocs(collection(db, "states"));
+            allStates = [];
+            querySnapshot.forEach((doc) => {
+                allStates.push(doc.data());
+            });
+            allStates.sort((a, b) => a.nome.localeCompare(b.nome));
+            renderStates(allStates);
+        } catch (error) {
+            grid.innerHTML = `<p style="color:#ef4444; text-align:center; width:100%">Erro ao carregar dados: ${error.message}</p>`;
+        }
+    }
+
+    // --- Core Filter Logic ---
+    function applyFilters() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const custoVal = filterCusto.value;
+        const climaVal = filterClima.value;
+        const vibeVal = filterVibe.value;
+        const sotaqueVal = filterSotaque.value; 
+
+        filterCusto.classList.toggle('active', custoVal !== "");
+        filterClima.classList.toggle('active', climaVal !== "");
+        filterVibe.classList.toggle('active', vibeVal !== "");
+        filterSotaque.classList.toggle('active', sotaqueVal !== "");
+
+        const filtered = allStates.filter(state => {
+            const matchesSearch = state.nome.toLowerCase().includes(searchTerm) || 
+                                  state.id.toLowerCase().includes(searchTerm);
+            if (!matchesSearch) return false;
+            if (custoVal && (!state.custo_visual || !state.custo_visual.includes(custoVal))) return false;
+            if (climaVal) {
+                const climaText = (state.clima || "").toLowerCase();
+                if (climaVal === 'frio') {
+                    if (!['neve', 'frio', 'inverno', 'baixa', 'continental'].some(k => climaText.includes(k))) return false;
+                } else if (climaVal === 'quente') {
+                    if (!['quente', 'sol', 'praia', 'verão', 'ameno', 'árido', 'subtropical'].some(k => climaText.includes(k))) return false;
+                }
+            }
+            if (vibeVal) {
+                const vibeText = (state.vibe_social || "").toLowerCase();
+                if (vibeVal === 'agitada') {
+                    if (!['agitada', 'festa', 'balada', 'noite', 'urbana', 'cidade', 'intensa'].some(k => vibeText.includes(k))) return false;
+                } else if (vibeVal === 'natureza') {
+                    if (!['natureza', 'calma', 'trilha', 'parque', 'ao ar livre', 'tranquila', 'familiar'].some(k => vibeText.includes(k))) return false;
+                }
+            }
+            if (sotaqueVal) {
+                const sotaqueText = (state.sotaque || "").toLowerCase();
+                if (sotaqueVal === 'neutro') {
+                    if (!['neutro', 'padrão', 'standard', 'claro'].some(k => sotaqueText.includes(k))) return false;
+                } else if (sotaqueVal === 'marcante') {
+                    if (['neutro', 'padrão', 'standard'].some(k => sotaqueText.includes(k))) return false;
+                }
+            }
+            return true;
+        });
+        renderStates(filtered);
+    }
+
+    // --- Render Logic ---
+    function renderStates(states) {
+        grid.innerHTML = '';
+        resultsCount.textContent = `${states.length} estado(s)`;
+        
+        if (states.length === 0) {
+            grid.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-secondary);">
+                    <h3>Nenhum estado encontrado</h3>
+                    <p>Tente ajustar seus filtros de busca.</p>
+                </div>`;
+            return;
         }
 
-        /**
-         * Cria um elemento HTML (card) para um estado.
-         */
-        function createStateCard(data) {
+        states.forEach(state => {
+            const isSelected = selectedStates.includes(state.id);
             const card = document.createElement('div');
-            card.className = "bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between border border-transparent dark:border-slate-700";
-            
-            // Helper para criar uma linha de informação
-            const infoLine = (label, value) => {
-                // Não renderiza a linha se o valor for N/C ou nulo
-                if (value === 'N/C' || value === null || value === undefined) return '';
-                return `
-                    <div class="mt-2 flex justify-between items-center">
-                        <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">${label}</p>
-                        <p class="text-sm text-gray-800 dark:text-gray-200 text-right">${value}</p>
-                    </div>
-                `;
-            };
+            card.className = `card ${isSelected ? 'selected' : ''}`;
+            card.onclick = (e) => toggleSelection(state.id, card);
 
-            // --- Visualização de Dados Aprimorada ---
-
-            // 1. Helper para Salário Mínimo
-            const salarioMinimo = (data['Salário Mínimo por Hora (USD)'] !== 'N/C' && data['Salário Mínimo por Hora (USD)'] > 0) 
-                ? `$${Number(data['Salário Mínimo por Hora (USD)']).toFixed(2)}<span class="text-xs text-gray-500 dark:text-gray-400">/hora</span>`
-                : '<span class="text-2xl">N/C</span>';
-
-            // 2. Helper para Custo de Vida (com cores)
-            const getCostOfLiving = (index) => {
-                if (index === 'N/C' || index === null) return '<span class="text-2xl text-gray-500 dark:text-gray-400">N/C</span>';
-                const val = Number(index);
-                let colorClass = 'text-yellow-600 dark:text-yellow-400'; // Média
-                if (val > 110) colorClass = 'text-red-500 font-bold'; // Alto Custo
-                if (val < 95) colorClass = 'text-green-600 dark:text-green-400 font-bold'; // Baixo Custo
-                return `<span class="text-2xl ${colorClass}">${val}</span>`;
-            };
-            const custoDeVida = getCostOfLiving(data['Índice de Custo de Vida']);
-
-            // Escapa o JSON para uso seguro em um atributo HTML
-            const safeStateJson = JSON.stringify(data).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+            let costClass = 'cost-Baixo';
+            if (state.custo_visual?.includes('Muito')) costClass = 'cost-Muito';
+            else if (state.custo_visual?.includes('Alto')) costClass = 'cost-Alto';
+            else if (state.custo_visual?.includes('Médio')) costClass = 'cost-Médio';
 
             card.innerHTML = `
-                <div>
-                    <div class="p-5">
-                        <div class="flex justify-between items-center">
-                            <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400">${data.Estado || 'Sem Nome'}</h2>
-                            <span class="bg-slate-100 dark:bg-slate-700 text-blue-800 dark:text-blue-200 text-sm font-bold px-3 py-1 rounded-full flex-shrink-0 ml-2">${data['Sigla do Estado'] || ''}</span>
-                        </div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">${data['Breve Descrição (Apelido)'] || ''}</p>
+                <div class="selection-indicator">✓</div>
+                <div class="card-header">
+                    <h3 class="card-title">${state.nome}</h3>
+                    <span class="card-id">${state.id}</span>
+                </div>
+                
+                <div class="badge-container">
+                    <span class="badge ${costClass}">${state.custo_visual || 'N/A'}</span>
+                </div>
+                
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <span class="detail-icon">🌡️</span>
+                        <span>${state.clima ? state.clima.split('.')[0] : 'N/A'}</span>
                     </div>
-
-                    <div class="grid grid-cols-2 gap-4 px-5 pb-4 border-b border-slate-200 dark:border-slate-700">
-                        <div>
-                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Custo de Vida</p>
-                            ${custoDeVida}
-                        </div>
-                        <div>
-                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Salário Mínimo</p>
-                            <p class="text-2xl font-bold text-gray-800 dark:text-gray-200">${salarioMinimo}</p>
-                        </div>
+                    <div class="detail-item">
+                        <span class="detail-icon">🗣️</span>
+                        <span>${state.sotaque || 'N/A'}</span>
                     </div>
-
-                    <div class="p-5">
-                         <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Mais Informações</h4>
-                        ${infoLine('Destaque', data['Destaque Principal'])}
-                        ${infoLine('Ambiente Acadêmico', data['Ambiente Acadêmico (Geral)'])}
-                        ${infoLine('Clima', data['Clima (Geral)'])}
-                        ${infoLine('Neve', data['Notas sobre Neve'])}
+                    <div class="detail-item">
+                        <span class="detail-icon">🌲</span>
+                        <span>Nat: ${state.acesso_natureza ? state.acesso_natureza + '/10' : 'N/A'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-icon">🚌</span>
+                        <span title="${state.transporte_publico}">${state.transporte_publico ? (state.transporte_publico.length > 20 ? state.transporte_publico.substring(0, 20) + '...' : state.transporte_publico) : 'N/A'}</span>
                     </div>
                 </div>
 
-                <div class="p-5 pt-0 mt-auto">
-                    <button class="gemini-btn w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
-                        data-state-json='${safeStateJson}'>
-                        ✨ Análise Rápida (IA)
-                    </button>
+                <div class="select-hint">
+                    ${isSelected ? 'Selecionado' : 'Clique para selecionar'}
                 </div>
             `;
-            return card;
-        }
+            grid.appendChild(card);
+        });
+    }
 
-        // --- Lógica da Gemini API (AGORA CHAMANDO O BACKEND SEGURO) ---
-
-        /**
-         * Mostra ou esconde o modal.
-         */
-        function toggleModal(show) {
-            if (show) {
-                geminiModal.classList.remove('hidden');
-            } else {
-                geminiModal.classList.add('hidden');
+    // --- Selection Logic ---
+    function toggleSelection(id, cardElement) {
+        if (selectedStates.includes(id)) {
+            selectedStates = selectedStates.filter(s => s !== id);
+            cardElement.classList.remove('selected');
+            const hint = cardElement.querySelector('.select-hint');
+            if(hint) hint.textContent = 'Clique para selecionar';
+        } else {
+            if (selectedStates.length >= 4) {
+                // Substituindo alert por um visual mais agradável temporário, ou apenas ignorando
+                // Por segurança e UX, manter um alerta nativo é aceitável, mas o prompt pediu para evitar.
+                // Como não criei um componente Toast completo, vou apenas piscar o botão FAB.
+                compareBtn.style.transform = "scale(1.2)";
+                setTimeout(() => compareBtn.style.transform = "translateX(-50%)", 200);
+                return;
             }
+            selectedStates.push(id);
+            cardElement.classList.add('selected');
+            const hint = cardElement.querySelector('.select-hint');
+            if(hint) hint.textContent = 'Selecionado';
         }
+        updateUI();
+    }
 
-        /**
-         * Converte texto Markdown simples (usado pela IA) em HTML.
-         */
-        function simpleMarkdownToHtml(text) {
-            let html = text
-                .replace(/^## (.*)$/gm, '<h3 class="text-lg font-semibold mt-4 mb-2 text-gray-900 dark:text-gray-100">$1</h3>')
-                .replace(/^\* (.*)$/gm, '<li>$1</li>')
-                .replace(/(\n|\r\n)+/g, '<br>'); // Substitui novas linhas por <br>
-
-            // Agrupa <li> em <ul> e remove <br> entre eles
-            html = html.replace(/(<li>.*?<\/li>)/gs, (match) => {
-                 let items = match.replace(/<\/li><br><li>/g, '</li><li>');
-                return `<ul class="space-y-1 list-outside list-disc ml-5">${items}</ul>`;
-            });
-
-             // Remove <br> extras entre listas e títulos
-            html = html.replace(/<\/ul><br><ul>/g, '</ul><ul>');
-            html = html.replace(/<\/h3><br>/g, '</h3>');
-            html = html.replace(/<\/ul><br>/g, '</ul>');
-            html = html.replace(/<br><ul>/g, '<ul>');
-            html = html.replace(/<br><h3/g, '<h3');
-            
-            return html;
+    function updateUI() {
+        compareCount.textContent = selectedStates.length;
+        if (selectedStates.length > 0) {
+            compareBtn.classList.add('visible');
+            compareBtn.style.display = 'flex';
+        } else {
+            compareBtn.classList.remove('visible');
+            setTimeout(() => {
+                if(selectedStates.length === 0) compareBtn.style.display = 'none';
+            }, 400);
         }
+    }
 
+    // --- Comparison Modal Logic ---
+    compareBtn.addEventListener('click', () => {
+        const statesToCompare = allStates.filter(s => selectedStates.includes(s.id));
+        if(statesToCompare.length === 0) return;
 
-        /**
-         * Busca informações chamando o Serverless Function do Vercel.
-         */
-        async function fetchGeminiInfo(stateData) {
-            toggleModal(true);
-            modalTitle.textContent = `Análise Rápida: ${stateData.Estado}`;
-            modalContent.innerHTML = '';
-            modalLoading.classList.remove('hidden');
-            
-            // O payload agora é apenas os dados brutos do estado, que será enviado para o Vercel API Route
-            const payload = {
-                state: stateData, 
-            };
+        // Reset AI result when opening new comparison
+        compareAiResult.classList.remove('visible');
+        compareAiResult.innerHTML = '';
 
-            let response;
-            try {
-                // Chama o endpoint do Vercel, que usa a chave secreta
-                response = await fetch(VERCEL_API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+        let html = '<table><thead><tr><th>Atributo</th>';
+        statesToCompare.forEach(s => html += `<th>${s.nome}</th>`);
+        html += '</tr></thead><tbody>';
 
-                if (!response.ok) {
-                    // Tenta ler a mensagem de erro do backend do Vercel
-                    let errorMessage = `Erro HTTP: ${response.status} ${response.statusText}`;
-                    try {
-                        const errorJson = await response.json();
-                        errorMessage = errorJson.error || errorMessage;
-                    } catch (e) {
-                        // Ignora erro de parsing se a resposta não for JSON
-                    }
-                    throw new Error(errorMessage);
-                }
+        const fields = [
+            { label: '🆔 Sigla/ID', key: 'id' },
+            { label: '🤑 Custo Visual', key: 'custo_visual' },
+            { label: '🔢 Índice Custo', key: 'custo' },
+            { label: '💵 Salário Mínimo', key: 'salario', suffix: ' USD/h' },
+            { label: '🗣️ Sotaque', key: 'sotaque' },
+            { label: '🌲 Acesso Natureza', key: 'acesso_natureza', suffix: '/10' },
+            { label: '❄️ Prob. Neve', key: 'prob_neve', suffix: '%' },
+            { label: '📏 Neve Média', key: 'neve_media', suffix: '"' },
+            { label: '🌡️ Clima', key: 'clima' },
+            { label: '👥 Densidade Pop.', key: 'densidade_pop' },
+            { label: '🚌 Transporte', key: 'transporte_publico' },
+            { label: '👔 Roupa Ideal', key: 'roupa_ideal' },
+            { label: '🎭 Vibe Social', key: 'vibe_social' },
+            { label: '🎓 Acadêmico', key: 'ambiente_academico' },
+            { label: '🕐 Fuso Horário', key: 'fuso_horario' },
+            { label: '🌟 Destaque', key: 'destaque' }
+        ];
 
-                const result = await response.json();
-                
-                if (result && result.analysis) {
-                    modalContent.innerHTML = simpleMarkdownToHtml(result.analysis);
-                } else {
-                    throw new Error("Resposta da API inválida ou vazia.");
-                }
-
-            } catch (error) {
-                console.error("Erro ao processar a análise da IA:", error);
-                modalContent.innerHTML = `<p class="text-red-500 dark:text-red-400"><strong>Erro:</strong> Não foi possível obter a análise da IA.</p><p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Detalhes: ${error.message}</p>`;
-            } finally {
-                modalLoading.classList.add('hidden');
-            }
-        }
-
-
-        // --- Inicialização da Aplicação ---
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeTheme();
-            initializeFirebase();
-
-            // Listeners do Modal
-            modalCloseBtn.addEventListener('click', () => toggleModal(false));
-            geminiModal.addEventListener('click', (e) => {
-                // Fecha o modal se clicar no overlay (fundo)
-                if (e.target === geminiModal) {
-                    toggleModal(false);
-                }
+        fields.forEach(f => {
+            html += `<tr><td>${f.label}</td>`;
+            statesToCompare.forEach(s => {
+                let val = s[f.key];
+                if (val === undefined || val === null) val = '-';
+                if (f.suffix && val !== '-') val += f.suffix;
+                html += `<td>${val}</td>`;
             });
-
-            // Event Delegation para os botões dos cards
-            cardsContainer.addEventListener('click', (e) => {
-                const button = e.target.closest('.gemini-btn');
-                if (button) {
-                    try {
-                        // Corrige o parsing do JSON
-                        const stateDataString = button.dataset.stateJson.replace(/&quot;/g, '"');
-                        const stateData = JSON.parse(stateDataString);
-                        fetchGeminiInfo(stateData);
-                    } catch (err) {
-                        console.error("Erro ao ler dados do estado do botão:", err);
-                        // Não usar alert()
-                        modalContent.innerHTML = `<p class="text-red-500 dark:text-red-400"><strong>Erro:</strong> Ocorreu um erro ao tentar ler os dados deste estado.</p>`;
-                        toggleModal(true);
-                    }
-                }
-            });
+            html += '</tr>';
         });
 
-    </script>
+        html += '</tbody></table>';
+        tableWrapper.innerHTML = html;
+        compareModal.style.display = 'flex';
+        setTimeout(() => compareModal.classList.add('show'), 10);
+    });
+
+    const hideModal = () => {
+        compareModal.classList.remove('show');
+        setTimeout(() => {
+            compareModal.style.display = 'none';
+        }, 300);
+    };
+
+    closeModal.addEventListener('click', hideModal);
+    
+    // Close modal on click outside (works for both modals)
+    window.onclick = (event) => { 
+        if (event.target == compareModal) hideModal();
+        if (event.target == aiModal) closeAiModal.click();
+    };
+
+    // --- Listeners ---
+    searchInput.addEventListener('input', applyFilters);
+    filterCusto.addEventListener('change', applyFilters);
+    filterClima.addEventListener('change', applyFilters);
+    filterVibe.addEventListener('change', applyFilters);
+    filterSotaque.addEventListener('change', applyFilters);
+
+    fetchStates();
+
+</script>
+
 </body>
 </html>
