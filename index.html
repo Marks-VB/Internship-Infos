@@ -1,79 +1,99 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-<head>
+<html lang="pt-br" class=""> <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador de Estágios</title>
+    <title>Informações de Estágios</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s, color 0.3s;
+            /* Transição suave de cores ao trocar de tema */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* Estilo para a barra de rolagem (opcional, mas melhora o visual dark) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        html.dark ::-webkit-scrollbar-track {
+            background: #2d3748; /* gray-800 -> slate-800 (via tw) */
+        }
+        html.dark ::-webkit-scrollbar-thumb {
+            background: #718096; /* gray-500 -> slate-500 (via tw) */
         }
     </style>
 </head>
-<body class="min-h-screen transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-slate-950 text-gray-900 dark:text-gray-100 min-h-screen">
 
-    <div class="container mx-auto px-4 py-6 max-w-7xl">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
-            <h1 class="text-3xl font-bold">📋 Informações de Estágios</h1>
+    <header class="bg-white/80 dark:bg-slate-900/80 shadow-md sticky top-0 z-10 backdrop-blur-lg">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+            <h1 class="text-xl font-bold text-blue-600 dark:text-blue-400">Visão Geral dos Estados</h1>
             
-            <div class="flex gap-3 items-center">
-                <!-- Botão de tema -->
-                <button id="themeToggle" class="p-2.5 rounded-lg transition-all duration-200 hover:scale-110">
-                    <span id="themeIcon">🌙</span>
-                </button>
-                
-                <!-- Botão de recarregar -->
-                <button id="refreshBtn" class="px-4 py-2.5 rounded-lg font-medium transition-all duration-200 hover:scale-105">
-                    🔄 Recarregar
+            <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <div id="loadingIndicator" class="text-center py-10">
+            <p class="text-lg font-medium text-gray-600 dark:text-gray-400">Carregando dados do Firebase...</p>
+        </div>
+
+        <div id="cardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+
+    </main>
+
+    <div id="geminiModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-lg w-full m-4 overflow-hidden transform transition-all duration-300 border border-transparent dark:border-slate-700">
+            <div class="flex justify-between items-center p-4 border-b dark:border-slate-700">
+                <h3 id="modalTitle" class="text-lg font-semibold text-blue-600 dark:text-blue-400">Análise da IA</h3>
+                <button id="modalCloseBtn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
-        </div>
-
-        <!-- Barra de pesquisa e filtros -->
-        <div class="mb-6 space-y-4">
-            <input type="text" id="searchInput" placeholder="🔍 Pesquisar por empresa, vaga, localização..." 
-                class="w-full px-4 py-3 rounded-lg border-2 transition-all duration-200 focus:outline-none focus:ring-2">
-            
-            <div class="flex gap-3 flex-wrap">
-                <select id="filterColumn" class="px-4 py-2 rounded-lg border-2 transition-all">
-                    <option value="">Filtrar por coluna...</option>
-                </select>
-                <button id="clearFilters" class="px-4 py-2 rounded-lg font-medium transition-all hover:scale-105">
-                    ✖️ Limpar Filtros
-                </button>
+            <div class="p-6 max-h-[70vh] overflow-y-auto">
+                <div id="modalLoading" class="text-center hidden">
+                    <svg class="animate-spin h-8 w-8 text-blue-600 dark:text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">A processar... Por favor, aguarde.</p>
+                </div>
+                <div id="modalContent" class="text-sm text-gray-700 dark:text-gray-300 max-w-none">
+                    </div>
             </div>
-        </div>
-
-        <!-- Status e contador -->
-        <div id="statusMessage" class="mb-4 p-4 rounded-lg font-medium text-center"></div>
-        <div id="counter" class="mb-4 text-center font-semibold"></div>
-
-        <!-- Tabela responsiva -->
-        <div class="overflow-x-auto rounded-lg shadow-lg">
-            <table id="dataTable" class="w-full">
-                <thead>
-                    <tr id="tableHeader"></tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
-        </div>
-
-        <!-- Loading -->
-        <div id="loading" class="text-center py-12">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2"></div>
-            <p class="mt-4 font-medium">Carregando dados...</p>
         </div>
     </div>
+
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // --- Configuração da Gemini API (AGORA SEGURO VIA VERCEL API ROUTE) ---
+        // A CHAVE DE API FOI MOVIDA PARA O ARQUIVO api/gemini-analysis.js NO VERCEL.
+        const VERCEL_API_URL = '/api/gemini-analysis'; // Novo endpoint local no Vercel
+        
+        // --- Configuração do Firebase ---
         const firebaseConfig = {
             apiKey: "AIzaSyBdUtPoAbOkVCGOBeVRgsq5jZXNOur0f_4",
             authDomain: "internship-infos.firebaseapp.com",
@@ -83,74 +103,72 @@
             appId: "1:642232016135:web:e2b5645ed285dd73a439a2",
             measurementId: "G-HVFS7M6XEC"
         };
-
+        
         let db, auth;
-        let allData = [];
-        let filteredData = [];
-        let isDarkMode = true;
 
-        const elements = {
-            body: document.body,
-            themeToggle: document.getElementById('themeToggle'),
-            themeIcon: document.getElementById('themeIcon'),
-            refreshBtn: document.getElementById('refreshBtn'),
-            searchInput: document.getElementById('searchInput'),
-            filterColumn: document.getElementById('filterColumn'),
-            clearFilters: document.getElementById('clearFilters'),
-            statusMessage: document.getElementById('statusMessage'),
-            counter: document.getElementById('counter'),
-            tableHeader: document.getElementById('tableHeader'),
-            tableBody: document.getElementById('tableBody'),
-            loading: document.getElementById('loading'),
-            dataTable: document.getElementById('dataTable')
-        };
+        // --- Elementos do DOM ---
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+        const htmlEl = document.documentElement;
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const cardsContainer = document.getElementById('cardsContainer');
 
-        // Aplicar tema
-        function applyTheme() {
-            if (isDarkMode) {
-                elements.body.className = 'min-h-screen bg-gray-900 text-white';
-                elements.themeIcon.textContent = '☀️';
-                elements.refreshBtn.className = 'px-4 py-2.5 rounded-lg font-medium bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200 hover:scale-105';
-                elements.searchInput.className = 'w-full px-4 py-3 rounded-lg border-2 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200';
-                elements.filterColumn.className = 'px-4 py-2 rounded-lg border-2 bg-gray-800 border-gray-700 text-white transition-all';
-                elements.clearFilters.className = 'px-4 py-2 rounded-lg font-medium bg-red-600 hover:bg-red-700 text-white transition-all hover:scale-105';
-                elements.themeToggle.className = 'p-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition-all duration-200 hover:scale-110';
-            } else {
-                elements.body.className = 'min-h-screen bg-gray-50 text-gray-900';
-                elements.themeIcon.textContent = '🌙';
-                elements.refreshBtn.className = 'px-4 py-2.5 rounded-lg font-medium bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200 hover:scale-105';
-                elements.searchInput.className = 'w-full px-4 py-3 rounded-lg border-2 bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200';
-                elements.filterColumn.className = 'px-4 py-2 rounded-lg border-2 bg-white border-gray-300 text-gray-900 transition-all';
-                elements.clearFilters.className = 'px-4 py-2 rounded-lg font-medium bg-red-500 hover:bg-red-600 text-white transition-all hover:scale-105';
-                elements.themeToggle.className = 'p-2.5 rounded-lg bg-gray-200 hover:bg-gray-300 transition-all duration-200 hover:scale-110';
+        // --- Elementos do Modal (Adicionados) ---
+        const geminiModal = document.getElementById('geminiModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modalContent');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const modalLoading = document.getElementById('modalLoading');
+
+
+        // --- Lógica de Alternância de Tema ---
+        
+        function initializeTheme() {
+            // Verifica a preferência do sistema ou o que está no localStorage
+            const storedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            let currentTheme = 'light';
+            if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
+                currentTheme = 'dark';
             }
-            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            applyTheme(currentTheme);
         }
 
-        // Inicializar tema
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            isDarkMode = savedTheme === 'dark';
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                htmlEl.classList.add('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                htmlEl.classList.remove('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+            localStorage.setItem('theme', theme);
         }
-        applyTheme();
-
-        elements.themeToggle.addEventListener('click', () => {
-            isDarkMode = !isDarkMode;
-            applyTheme();
-            renderTable(filteredData);
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+            applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
         });
 
-        // Inicializar Firebase
+        // --- Lógica do Firebase ---
+
+        /**
+         * Inicializa o Firebase e carrega os dados.
+         */
         async function initializeFirebase() {
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
 
+                // Autenticação anônima é usada para ler dados
                 await new Promise((resolve, reject) => {
                     onAuthStateChanged(auth, (user) => {
                         if (user) {
-                            console.log("Usuário autenticado:", user.uid);
                             resolve(user);
                         }
                     }, reject);
@@ -158,139 +176,258 @@
                 });
 
                 await loadData();
+
             } catch (error) {
-                console.error("Erro ao inicializar Firebase:", error);
-                showStatus("Erro ao conectar com o Firebase.", "error");
+                console.error("Erro ao inicializar o Firebase:", error);
+                loadingIndicator.innerHTML = `<p class="text-lg font-medium text-red-600 dark:text-red-400">Erro ao carregar dados: ${error.message}</p>`;
             }
         }
 
-        // Carregar dados
+        /**
+         * Carrega os dados do Firestore.
+         */
         async function loadData() {
             try {
-                elements.loading.style.display = 'block';
-                elements.dataTable.style.display = 'none';
+                loadingIndicator.style.display = 'block';
+                cardsContainer.innerHTML = '';
                 
                 const querySnapshot = await getDocs(collection(db, 'internship-infos'));
-                allData = [];
+                const allData = [];
                 
                 querySnapshot.forEach((doc) => {
                     allData.push({ id: doc.id, ...doc.data() });
                 });
 
+                loadingIndicator.style.display = 'none';
+
                 if (allData.length === 0) {
-                    showStatus("Nenhum dado encontrado no Firebase.", "warning");
-                    elements.loading.style.display = 'none';
+                    cardsContainer.innerHTML = '<p class="text-lg font-medium text-gray-600 dark:text-gray-400 text-center">Nenhum dado de estágio encontrado.</p>';
                     return;
                 }
 
-                filteredData = [...allData];
-                populateFilterOptions();
-                renderTable(filteredData);
-                updateCounter();
-                showStatus(`✅ ${allData.length} registros carregados com sucesso!`, "success");
-                
-                elements.loading.style.display = 'none';
-                elements.dataTable.style.display = 'table';
+                renderCards(allData);
+
             } catch (error) {
                 console.error("Erro ao carregar dados:", error);
-                showStatus("Erro ao carregar dados: " + error.message, "error");
-                elements.loading.style.display = 'none';
+                loadingIndicator.innerHTML = `<p class="text-lg font-medium text-red-600 dark:text-red-400">Erro ao carregar dados: ${error.message}</p>`;
             }
         }
 
-        // Preencher opções de filtro
-        function populateFilterOptions() {
-            if (allData.length === 0) return;
-            
-            const columns = Object.keys(allData[0]).filter(key => key !== 'id');
-            elements.filterColumn.innerHTML = '<option value="">Todas as colunas</option>';
-            
-            columns.forEach(col => {
-                const option = document.createElement('option');
-                option.value = col;
-                option.textContent = col;
-                elements.filterColumn.appendChild(option);
+
+        /**
+         * Renderiza os cards na tela com base nos dados.
+         */
+        function renderCards(states) {
+            states.forEach(state => {
+                const card = createStateCard(state);
+                cardsContainer.appendChild(card);
             });
         }
 
-        // Renderizar tabela
-        function renderTable(data) {
-            if (data.length === 0) {
-                elements.tableBody.innerHTML = '<tr><td colspan="100" class="text-center py-8">Nenhum dado para exibir</td></tr>';
-                return;
-            }
-
-            const columns = Object.keys(data[0]).filter(key => key !== 'id');
+        /**
+         * Cria um elemento HTML (card) para um estado.
+         */
+        function createStateCard(data) {
+            const card = document.createElement('div');
+            card.className = "bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between border border-transparent dark:border-slate-700";
             
-            // Header
-            elements.tableHeader.innerHTML = columns.map(col => 
-                `<th class="px-4 py-3 text-left font-semibold ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}">${col}</th>`
-            ).join('');
-
-            // Body
-            elements.tableBody.innerHTML = data.map((row, index) => {
-                const bgClass = isDarkMode 
-                    ? (index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-750') 
-                    : (index % 2 === 0 ? 'bg-white' : 'bg-gray-50');
-                
-                return `<tr class="${bgClass} hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} transition-colors">
-                    ${columns.map(col => `<td class="px-4 py-3 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}">${row[col] ?? 'N/A'}</td>`).join('')}
-                </tr>`;
-            }).join('');
-        }
-
-        // Filtrar dados
-        function filterData() {
-            const searchTerm = elements.searchInput.value.toLowerCase();
-            const selectedColumn = elements.filterColumn.value;
-
-            filteredData = allData.filter(row => {
-                const searchColumns = selectedColumn ? [selectedColumn] : Object.keys(row).filter(k => k !== 'id');
-                
-                return searchColumns.some(col => {
-                    const value = String(row[col] ?? '').toLowerCase();
-                    return value.includes(searchTerm);
-                });
-            });
-
-            renderTable(filteredData);
-            updateCounter();
-        }
-
-        // Atualizar contador
-        function updateCounter() {
-            elements.counter.textContent = `Mostrando ${filteredData.length} de ${allData.length} registros`;
-        }
-
-        // Mostrar status
-        function showStatus(message, type) {
-            const colors = {
-                success: isDarkMode ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
-                error: isDarkMode ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
-                warning: isDarkMode ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800'
+            // Helper para criar uma linha de informação
+            const infoLine = (label, value) => {
+                // Não renderiza a linha se o valor for N/C ou nulo
+                if (value === 'N/C' || value === null || value === undefined) return '';
+                return `
+                    <div class="mt-2 flex justify-between items-center">
+                        <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">${label}</p>
+                        <p class="text-sm text-gray-800 dark:text-gray-200 text-right">${value}</p>
+                    </div>
+                `;
             };
-            
-            elements.statusMessage.textContent = message;
-            elements.statusMessage.className = `mb-4 p-4 rounded-lg font-medium text-center ${colors[type] || ''}`;
-            
-            setTimeout(() => {
-                elements.statusMessage.textContent = '';
-                elements.statusMessage.className = 'mb-4 p-4 rounded-lg font-medium text-center';
-            }, 5000);
+
+            // --- Visualização de Dados Aprimorada ---
+
+            // 1. Helper para Salário Mínimo
+            const salarioMinimo = (data['Salário Mínimo por Hora (USD)'] !== 'N/C' && data['Salário Mínimo por Hora (USD)'] > 0) 
+                ? `$${Number(data['Salário Mínimo por Hora (USD)']).toFixed(2)}<span class="text-xs text-gray-500 dark:text-gray-400">/hora</span>`
+                : '<span class="text-2xl">N/C</span>';
+
+            // 2. Helper para Custo de Vida (com cores)
+            const getCostOfLiving = (index) => {
+                if (index === 'N/C' || index === null) return '<span class="text-2xl text-gray-500 dark:text-gray-400">N/C</span>';
+                const val = Number(index);
+                let colorClass = 'text-yellow-600 dark:text-yellow-400'; // Média
+                if (val > 110) colorClass = 'text-red-500 font-bold'; // Alto Custo
+                if (val < 95) colorClass = 'text-green-600 dark:text-green-400 font-bold'; // Baixo Custo
+                return `<span class="text-2xl ${colorClass}">${val}</span>`;
+            };
+            const custoDeVida = getCostOfLiving(data['Índice de Custo de Vida']);
+
+            // Escapa o JSON para uso seguro em um atributo HTML
+            const safeStateJson = JSON.stringify(data).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+
+            card.innerHTML = `
+                <div>
+                    <div class="p-5">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400">${data.Estado || 'Sem Nome'}</h2>
+                            <span class="bg-slate-100 dark:bg-slate-700 text-blue-800 dark:text-blue-200 text-sm font-bold px-3 py-1 rounded-full flex-shrink-0 ml-2">${data['Sigla do Estado'] || ''}</span>
+                        </div>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">${data['Breve Descrição (Apelido)'] || ''}</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 px-5 pb-4 border-b border-slate-200 dark:border-slate-700">
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Custo de Vida</p>
+                            ${custoDeVida}
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Salário Mínimo</p>
+                            <p class="text-2xl font-bold text-gray-800 dark:text-gray-200">${salarioMinimo}</p>
+                        </div>
+                    </div>
+
+                    <div class="p-5">
+                         <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Mais Informações</h4>
+                        ${infoLine('Destaque', data['Destaque Principal'])}
+                        ${infoLine('Ambiente Acadêmico', data['Ambiente Acadêmico (Geral)'])}
+                        ${infoLine('Clima', data['Clima (Geral)'])}
+                        ${infoLine('Neve', data['Notas sobre Neve'])}
+                    </div>
+                </div>
+
+                <div class="p-5 pt-0 mt-auto">
+                    <button class="gemini-btn w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                        data-state-json='${safeStateJson}'>
+                        ✨ Análise Rápida (IA)
+                    </button>
+                </div>
+            `;
+            return card;
         }
 
-        // Event listeners
-        elements.searchInput.addEventListener('input', filterData);
-        elements.filterColumn.addEventListener('change', filterData);
-        elements.clearFilters.addEventListener('click', () => {
-            elements.searchInput.value = '';
-            elements.filterColumn.value = '';
-            filterData();
-        });
-        elements.refreshBtn.addEventListener('click', loadData);
+        // --- Lógica da Gemini API (AGORA CHAMANDO O BACKEND SEGURO) ---
 
-        // Inicializar
-        initializeFirebase();
+        /**
+         * Mostra ou esconde o modal.
+         */
+        function toggleModal(show) {
+            if (show) {
+                geminiModal.classList.remove('hidden');
+            } else {
+                geminiModal.classList.add('hidden');
+            }
+        }
+
+        /**
+         * Converte texto Markdown simples (usado pela IA) em HTML.
+         */
+        function simpleMarkdownToHtml(text) {
+            let html = text
+                .replace(/^## (.*)$/gm, '<h3 class="text-lg font-semibold mt-4 mb-2 text-gray-900 dark:text-gray-100">$1</h3>')
+                .replace(/^\* (.*)$/gm, '<li>$1</li>')
+                .replace(/(\n|\r\n)+/g, '<br>'); // Substitui novas linhas por <br>
+
+            // Agrupa <li> em <ul> e remove <br> entre eles
+            html = html.replace(/(<li>.*?<\/li>)/gs, (match) => {
+                 let items = match.replace(/<\/li><br><li>/g, '</li><li>');
+                return `<ul class="space-y-1 list-outside list-disc ml-5">${items}</ul>`;
+            });
+
+             // Remove <br> extras entre listas e títulos
+            html = html.replace(/<\/ul><br><ul>/g, '</ul><ul>');
+            html = html.replace(/<\/h3><br>/g, '</h3>');
+            html = html.replace(/<\/ul><br>/g, '</ul>');
+            html = html.replace(/<br><ul>/g, '<ul>');
+            html = html.replace(/<br><h3/g, '<h3');
+            
+            return html;
+        }
+
+
+        /**
+         * Busca informações chamando o Serverless Function do Vercel.
+         */
+        async function fetchGeminiInfo(stateData) {
+            toggleModal(true);
+            modalTitle.textContent = `Análise Rápida: ${stateData.Estado}`;
+            modalContent.innerHTML = '';
+            modalLoading.classList.remove('hidden');
+            
+            // O payload agora é apenas os dados brutos do estado, que será enviado para o Vercel API Route
+            const payload = {
+                state: stateData, 
+            };
+
+            let response;
+            try {
+                // Chama o endpoint do Vercel, que usa a chave secreta
+                response = await fetch(VERCEL_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    // Tenta ler a mensagem de erro do backend do Vercel
+                    let errorMessage = `Erro HTTP: ${response.status} ${response.statusText}`;
+                    try {
+                        const errorJson = await response.json();
+                        errorMessage = errorJson.error || errorMessage;
+                    } catch (e) {
+                        // Ignora erro de parsing se a resposta não for JSON
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                const result = await response.json();
+                
+                if (result && result.analysis) {
+                    modalContent.innerHTML = simpleMarkdownToHtml(result.analysis);
+                } else {
+                    throw new Error("Resposta da API inválida ou vazia.");
+                }
+
+            } catch (error) {
+                console.error("Erro ao processar a análise da IA:", error);
+                modalContent.innerHTML = `<p class="text-red-500 dark:text-red-400"><strong>Erro:</strong> Não foi possível obter a análise da IA.</p><p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Detalhes: ${error.message}</p>`;
+            } finally {
+                modalLoading.classList.add('hidden');
+            }
+        }
+
+
+        // --- Inicialização da Aplicação ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTheme();
+            initializeFirebase();
+
+            // Listeners do Modal
+            modalCloseBtn.addEventListener('click', () => toggleModal(false));
+            geminiModal.addEventListener('click', (e) => {
+                // Fecha o modal se clicar no overlay (fundo)
+                if (e.target === geminiModal) {
+                    toggleModal(false);
+                }
+            });
+
+            // Event Delegation para os botões dos cards
+            cardsContainer.addEventListener('click', (e) => {
+                const button = e.target.closest('.gemini-btn');
+                if (button) {
+                    try {
+                        // Corrige o parsing do JSON
+                        const stateDataString = button.dataset.stateJson.replace(/&quot;/g, '"');
+                        const stateData = JSON.parse(stateDataString);
+                        fetchGeminiInfo(stateData);
+                    } catch (err) {
+                        console.error("Erro ao ler dados do estado do botão:", err);
+                        // Não usar alert()
+                        modalContent.innerHTML = `<p class="text-red-500 dark:text-red-400"><strong>Erro:</strong> Ocorreu um erro ao tentar ler os dados deste estado.</p>`;
+                        toggleModal(true);
+                    }
+                }
+            });
+        });
+
     </script>
 </body>
 </html>

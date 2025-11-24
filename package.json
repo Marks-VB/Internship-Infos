@@ -1,0 +1,12 @@
+{
+  "name": "internship-infos-vercel",
+  "version": "1.0.0",
+  "description": "Backend for Gemini analysis.",
+  "main": "api/gemini-analysis.js",
+  "scripts": {
+    "start": "node api/gemini-analysis.js"
+  },
+  "dependencies": {
+    "@google/genai": "^0.1.0"
+  }
+}
