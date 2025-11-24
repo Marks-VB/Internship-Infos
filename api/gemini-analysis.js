@@ -1,103 +1,99 @@
-import { GoogleGenAI } from "@google/genai";
-
-// A chave de API é lida de forma segura da variável de ambiente no Vercel.
-// O Vercel a injeta via "process.env.GEMINI_API_KEY"
-const geminiApiKey = process.env.GEMINI_API_KEY;
-
-// Inicializa o cliente Gemini com a chave segura
-// Nota: Se a chave não existir, o erro será capturado mais abaixo
-const ai = geminiApiKey ? new GoogleGenAI({ apiKey: geminiApiKey }) : null;
-
 /**
- * Helper para construir o prompt (similar ao que estava no frontend).
- */
-function buildPrompt(stateData) {
-    // Recalcula o salário mínimo para o prompt
-    const salarioMinimo = (stateData['Salário Mínimo por Hora (USD)'] !== 'N/C' && stateData['Salário Mínimo por Hora (USD)'] > 0) 
-        ? `$${Number(stateData['Salário Mínimo por Hora (USD)']).toFixed(2)}/hora`
-        : 'Não aplicável';
-
-    const systemPrompt = `Você é um assistente de carreira e mentor para estudantes que procuram estágios nos EUA.
-Seja conciso, útil e use um tom encorajador.
-Formate sua resposta obrigatoriamente usando Markdown simples (títulos com ##, listas com *).
-Responda sempre em Português do Brasil.`;
-            
-    const userQuery = `Estou a analisar o estado ${stateData.Estado} (${stateData['Sigla do Estado']}).
-    Tenho os seguintes dados:
-    - Destaque Principal: ${stateData['Destaque Principal']}
-    - Custo de Vida (Índice): ${stateData['Índice de Custo de Vida']}
-    - Salário Mínimo: ${salarioMinimo}
-    - Ambiente Acadêmico: ${stateData['Ambiente Acadêmico (Geral)']}
-    - Clima: ${stateData['Clima (Geral)']}
-
-    Por favor, gera um resumo para um estudante (potencialmente internacional) sobre estagiar aqui.
-    O resumo deve incluir:
-    ## Prós
-    * (Liste 2-3 prós, considerando os dados)
-    ## Contras
-    * (Liste 2-3 contras, considerando os dados)
-    ## Oportunidades
-    * (Liste 3-4 empresas ou indústrias chave para estágios, com base no "Destaque Principal")
-    `;
-
-    return { systemPrompt, userQuery };
-}
-
-/**
- * Função principal que o Vercel executa.
- * Reage a requisições HTTP (POST do seu frontend).
+ * Serverless Function (Vercel) para recomendação de estágios.
+ * Baseada na implementação robusta do projeto 'anhangueracxs-chatbot'.
+ * Usa fetch nativo para evitar dependências de bibliotecas externas.
  */
 export default async function handler(req, res) {
-    // 1. Validar Método
+    // 1. Configurar CORS
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    );
+
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
+
+    // 2. Validar Método
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Método não permitido. Use POST.' });
     }
 
-    // 2. Validar Chave de API
-    if (!geminiApiKey || !ai) {
-        console.error("GEMINI_API_KEY não configurada no ambiente.");
-        return res.status(500).json({ error: 'Configuração do Servidor: Chave de API ausente.' });
+    // 3. Obter Chave de API
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+        console.error("ERRO: GEMINI_API_KEY não configurada.");
+        return res.status(500).json({ error: 'Configuração do servidor incompleta.' });
     }
 
-    // 3. Extrair dados do estado
-    let stateData;
     try {
-        const body = req.body;
-        stateData = body.state;
-        if (!stateData || !stateData.Estado) {
-            return res.status(400).json({ error: 'Dados do estado inválidos ou ausentes.' });
+        // 4. Extrair dados do Body
+        const { state } = req.body;
+        if (!state || !state.Estado) {
+            return res.status(400).json({ error: 'Dados do estado inválidos.' });
         }
-    } catch (e) {
-        return res.status(400).json({ error: 'Formato da requisição inválido.' });
-    }
 
-    // 4. Construir o Prompt
-    const { systemPrompt, userQuery } = buildPrompt(stateData);
+        // 5. Construir o Prompt (Lógica de Negócio)
+        const salarioTexto = (state['Salário Mínimo por Hora (USD)'] !== 'N/C' && state['Salário Mínimo por Hora (USD)'] > 0) 
+            ? `$${Number(state['Salário Mínimo por Hora (USD)']).toFixed(2)}/hora`
+            : 'Não aplicável';
 
-    // 5. Chamar a API do Gemini
-    try {
-        // CORREÇÃO: Usar o modelo 'gemini-1.5-flash' que é estável e disponível
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash", 
-            contents: [{ role: "user", parts: [{ text: userQuery }] }],
-            config: {
-                systemInstruction: systemPrompt,
-            },
+        const systemInstruction = `Você é um mentor de carreira especializado em intercâmbio nos EUA. Responda em Português do Brasil usando Markdown.`;
+        
+        const userPrompt = `
+        Analise o estado: ${state.Estado} (${state['Sigla do Estado']}).
+        Dados:
+        - Destaque: ${state['Destaque Principal']}
+        - Custo de Vida: ${state['Índice de Custo de Vida']}
+        - Salário: ${salarioTexto}
+        - Acadêmico: ${state['Ambiente Acadêmico (Geral)']}
+        - Clima: ${state['Clima (Geral)']}
+
+        Gere um resumo com:
+        ## Prós
+        * (2-3 pontos positivos)
+        ## Contras
+        * (2-3 pontos de atenção)
+        ## Oportunidades
+        * (3-4 empresas/indústrias chave)
+        `;
+
+        // 6. Chamada Direta à API do Google (Igual ao projeto do chatbot)
+        // Usando gemini-1.5-flash que é o modelo estável padrão para texto rápido
+        const googleApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+        const payload = {
+            contents: [{ parts: [{ text: userPrompt }] }],
+            systemInstruction: { parts: [{ text: systemInstruction }] }
+        };
+
+        const googleResponse = await fetch(googleApiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         });
 
-        // Verificação de segurança para resposta vazia
-        if (!response || !response.text) {
-             throw new Error("Resposta da IA vazia.");
+        const data = await googleResponse.json();
+
+        if (!googleResponse.ok) {
+            console.error('Erro da API Google:', data);
+            return res.status(googleResponse.status).json({ 
+                error: 'Erro na IA', 
+                details: data.error?.message || 'Erro desconhecido' 
+            });
         }
 
-        const text = response.text;
+        // 7. Extrair texto da resposta
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sem resposta.";
 
-        // 6. Retornar a resposta (apenas o texto)
         res.status(200).json({ analysis: text });
 
     } catch (error) {
-        console.error('Erro detalhado na API Gemini:', error);
-        // Retorna o erro exato para ajudar no debug (pode remover em produção)
-        res.status(500).json({ error: `Erro ao processar a IA: ${error.message}` });
+        console.error('Erro interno:', error);
+        res.status(500).json({ error: 'Erro interno ao processar solicitação.' });
     }
 }
