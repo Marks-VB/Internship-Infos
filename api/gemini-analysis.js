@@ -5,7 +5,8 @@ import { GoogleGenAI } from "@google/genai";
 const geminiApiKey = process.env.GEMINI_API_KEY;
 
 // Inicializa o cliente Gemini com a chave segura
-const ai = new GoogleGenAI({ apiKey: geminiApiKey });
+// Nota: Se a chave não existir, o erro será capturado mais abaixo
+const ai = geminiApiKey ? new GoogleGenAI({ apiKey: geminiApiKey }) : null;
 
 /**
  * Helper para construir o prompt (similar ao que estava no frontend).
@@ -53,9 +54,9 @@ export default async function handler(req, res) {
     }
 
     // 2. Validar Chave de API
-    if (!geminiApiKey) {
-        console.error("GEMINI_API_KEY não configurada.");
-        return res.status(500).json({ error: 'Chave de API do Gemini não configurada no servidor.' });
+    if (!geminiApiKey || !ai) {
+        console.error("GEMINI_API_KEY não configurada no ambiente.");
+        return res.status(500).json({ error: 'Configuração do Servidor: Chave de API ausente.' });
     }
 
     // 3. Extrair dados do estado
@@ -75,13 +76,19 @@ export default async function handler(req, res) {
 
     // 5. Chamar a API do Gemini
     try {
+        // CORREÇÃO: Usar o modelo 'gemini-1.5-flash' que é estável e disponível
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash", // Usa o mesmo modelo que estava no frontend
+            model: "gemini-2.5-flash", 
             contents: [{ role: "user", parts: [{ text: userQuery }] }],
             config: {
                 systemInstruction: systemPrompt,
             },
         });
+
+        // Verificação de segurança para resposta vazia
+        if (!response || !response.text) {
+             throw new Error("Resposta da IA vazia.");
+        }
 
         const text = response.text;
 
@@ -89,7 +96,8 @@ export default async function handler(req, res) {
         res.status(200).json({ analysis: text });
 
     } catch (error) {
-        console.error('Erro na API Gemini:', error);
-        res.status(500).json({ error: 'Erro ao processar a análise da IA.' });
+        console.error('Erro detalhado na API Gemini:', error);
+        // Retorna o erro exato para ajudar no debug (pode remover em produção)
+        res.status(500).json({ error: `Erro ao processar a IA: ${error.message}` });
     }
 }
