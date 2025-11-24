@@ -64,7 +64,7 @@ export default async function handler(req, res) {
 
         // 6. Chamada Direta à API do Google (Igual ao projeto do chatbot)
         // Usando gemini-1.5-flash que é o modelo estável padrão para texto rápido
-        const googleApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        const googleApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
         const payload = {
             contents: [{ parts: [{ text: userPrompt }] }],
