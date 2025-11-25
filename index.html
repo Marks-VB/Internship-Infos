@@ -808,6 +808,7 @@
         <div class="modal-header">
             <h2>Comparativo Completo</h2>
             <div style="display:flex; gap:10px; align-items:center;">
+                <!-- Botão AI dentro do Comparador -->
                 <button class="btn-ai" id="aiCompareActionBtn" style="font-size:0.8rem; padding: 8px 16px;">
                     ✨ Analisar com IA
                 </button>
@@ -817,6 +818,7 @@
         <div class="table-container" id="tableWrapper">
             <!-- Tabela -->
         </div>
+        <!-- Area de Resposta da IA no Modal de Comparação -->
         <div id="compareAiResult" class="ai-response" style="margin: 20px; border-top: 2px dashed var(--border);"></div>
     </div>
 </div>
@@ -1168,12 +1170,18 @@
         const statesContext = allStates.map(s => `${s.nome} (${s.clima}, ${s.vibe_social}, custo: ${s.custo_visual})`).join('; ');
         
         const prompt = `
-            Atue como um especialista em intercâmbio nos EUA.
-            O usuário está procurando um estado com estas preferências: "${userText}".
-            Com base na sua base de conhecimento e nesta lista de estados disponíveis: [${statesContext}],
-            Recomende os 3 melhores estados para esse usuário.
-            Para cada estado, explique o motivo da escolha de forma curta e descontraída.
-            Use formatação Markdown (negrito, listas) e emojis. Responda em Português.
+            Você é um assistente especializado EXCLUSIVAMENTE em intercâmbio e viagens para os EUA.
+            Sua missão é ajudar o usuário a escolher um estado americano baseado no perfil dele.
+
+            Entrada do usuário: "${userText}"
+
+            REGRAS OBRIGATÓRIAS:
+            1. Se a entrada do usuário NÃO for relacionada a preferências de viagem, clima, custo de vida, cultura, estudos ou intercâmbio, você DEVE recusar responder. Diga: "Desculpe, só posso ajudar com dúvidas sobre intercâmbio e escolha de estados nos EUA! ✈️🇺🇸".
+            2. Se for relacionada, use a lista de estados abaixo para recomendar os 3 melhores.
+            
+            Lista de Estados: [${statesContext}]
+
+            Responda em Português, com formatação Markdown e emojis.
         `;
 
         const text = await callGemini(prompt);
