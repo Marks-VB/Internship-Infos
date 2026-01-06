@@ -24,9 +24,25 @@
             --danger: #ef4444;
             --radius-md: 12px;
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --header-bg: #ffffff;
+            --table-header-bg: #f1f5f9;
+            --table-row-hover: #f8fafc;
         }
 
-        * { box-sizing: border-box; }
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --text-main: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --primary-light: rgba(99, 102, 241, 0.2);
+            --header-bg: #1e293b;
+            --table-header-bg: #0f172a;
+            --table-row-hover: rgba(255, 255, 255, 0.03);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        * { box-sizing: border-box; transition: background-color 0.3s, border-color 0.3s, color 0.1s; }
 
         body {
             font-family: 'Outfit', sans-serif;
@@ -42,13 +58,20 @@
 
         /* --- Header --- */
         header {
-            background-color: var(--card-bg);
+            background-color: var(--header-bg);
             padding: 1rem 2rem;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         h1 {
@@ -91,18 +114,18 @@
             min-width: 250px;
         }
 
-        input[type="text"], select {
+        input[type="text"], select, textarea {
             padding: 8px 12px;
             border-radius: 8px;
             border: 1px solid var(--border);
+            background-color: var(--card-bg);
             font-family: inherit;
             font-size: 0.9rem;
             color: var(--text-main);
             outline: none;
-            transition: border-color 0.2s;
         }
 
-        input[type="text"]:focus, select:focus {
+        input[type="text"]:focus, select:focus, textarea:focus {
             border-color: var(--primary);
         }
 
@@ -114,13 +137,25 @@
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
         .btn-action:hover { background-color: var(--primary-hover); }
+
+        .btn-theme {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
 
         /* --- Tabela Estilo Planilha --- */
         .main-content {
@@ -146,7 +181,7 @@
         }
 
         th {
-            background: #f1f5f9;
+            background: var(--table-header-bg);
             position: sticky;
             top: 0;
             z-index: 10;
@@ -166,9 +201,10 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            color: var(--text-main);
         }
 
-        tr:hover td { background-color: #f8fafc; }
+        tr:hover td { background-color: var(--table-row-hover); }
 
         .badge {
             padding: 4px 8px;
@@ -182,13 +218,16 @@
 
         .badge-success { background: #dcfce7; color: #15803d; }
         .badge-orange { background: #ffedd5; color: #c2410c; }
+        
+        [data-theme="dark"] .badge-success { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        [data-theme="dark"] .badge-orange { background: rgba(249, 115, 22, 0.2); color: #fb923c; }
 
         /* --- Modal Editor --- */
         .modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, 0.5);
+            background: rgba(15, 23, 42, 0.7);
             backdrop-filter: blur(4px);
             z-index: 1000;
             justify-content: center;
@@ -202,10 +241,11 @@
             max-width: 900px;
             max-height: 90vh;
             border-radius: var(--radius-md);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            border: 1px solid var(--border);
         }
 
         .modal-header {
@@ -244,7 +284,7 @@
         .dynamic-list {
             margin-top: 10px;
             padding: 12px;
-            background: #f8fafc;
+            background: var(--bg-body);
             border-radius: 8px;
             border: 1px solid var(--border);
         }
@@ -264,7 +304,7 @@
         }
 
         .btn-save { background: var(--success); color: white; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; }
-        .btn-cancel { background: #e2e8f0; color: var(--text-main); border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; }
+        .btn-cancel { background: var(--border); color: var(--text-main); border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; }
 
         .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary); }
 
@@ -278,7 +318,10 @@
 <body>
 
 <header>
-    <h1>🎓 Painel de Universidades (EUA)</h1>
+    <div class="header-left">
+        <h1>🎓 Painel de Universidades</h1>
+        <button id="themeToggle" class="btn-theme" title="Alternar Modo Escuro">🌙</button>
+    </div>
     <div id="syncStatus" style="font-size: 0.8rem; color: var(--success); display: none;">Sincronizado</div>
 </header>
 
@@ -474,6 +517,20 @@
 
     let universities = [];
 
+    // --- Controle de Tema ---
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.setAttribute('data-theme', savedTheme);
+    themeToggle.innerText = savedTheme === 'dark' ? '☀️' : '🌙';
+
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = document.body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        themeToggle.innerText = newTheme === 'dark' ? '☀️' : '🌙';
+    });
+
     onSnapshot(colRef, (snapshot) => {
         universities = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         populateStateFilter();
@@ -537,7 +594,6 @@
                 discordText = u.contato_coach.coaches.map(c => c.discord).filter(Boolean).join(', ');
                 twitterText = u.contato_coach.coaches.map(c => c.x).filter(Boolean).join(', ');
             } else if (u.contato_coach) {
-                // Estrutura do upload.html (Map direto)
                 if (u.contato_coach.nome_coach) coachesHtml = `<span class="badge badge-success">${u.contato_coach.nome_coach}</span>`;
                 discordText = u.contato_coach.discord || "";
                 twitterText = u.contato_coach.twitter_x || u.contato_coach.x || "";
@@ -549,7 +605,6 @@
             if (Array.isArray(gamesData)) {
                 gamesHtml = gamesData.map(g => `<span class="badge">${g}</span>`).join('');
             } else if (gamesData && typeof gamesData === 'object') {
-                // Estrutura do upload.html (Map de booleanos)
                 const activeGames = Object.keys(gamesData).filter(k => gamesData[k] === true);
                 gamesHtml = activeGames.map(g => `<span class="badge">${g.toUpperCase()}</span>`).join('');
             }
@@ -557,7 +612,7 @@
             // --- Lógica do Link de Esports ---
             const esportsUrl = u.esportes_e_jogos?.link_esports;
             const esportsLinkHtml = (esportsUrl && esportsUrl.trim() !== "") 
-                ? `<a href="${esportsUrl}" target="_blank">Link</a>` 
+                ? `<a href="${esportsUrl}" target="_blank" style="color:var(--primary); font-weight:600">Link</a>` 
                 : '-';
 
             return `
@@ -629,7 +684,6 @@
         document.getElementById('edit-cursos').value = uni?.academicos?.grade_cursos || '';
         document.getElementById('edit-link-esports').value = uni?.esportes_e_jogos?.link_esports || '';
 
-        // --- Popular Jogos ---
         document.getElementById('gamesList').innerHTML = '';
         const games = uni?.esportes_e_jogos?.lista_jogos;
         if (Array.isArray(games)) {
@@ -638,7 +692,6 @@
             Object.keys(games).filter(k => games[k] === true).forEach(k => addGameField(k.toUpperCase()));
         }
 
-        // --- Popular Coaches ---
         document.getElementById('coachesList').innerHTML = '';
         if (uni?.contato_coach?.coaches && Array.isArray(uni.contato_coach.coaches)) {
             uni.contato_coach.coaches.forEach(c => addCoachField(c.nome, c.discord, c.x));
@@ -689,7 +742,6 @@
             },
             contato_coach: {
                 coaches: coaches,
-                // Preserva compatibilidade com campos antigos
                 nome_coach: coaches[0]?.nome || "",
                 discord: coaches[0]?.discord || "",
                 twitter_x: coaches[0]?.x || ""
