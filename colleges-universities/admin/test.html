@@ -138,7 +138,7 @@
         }
 
         .search-main {
-            min-width: 300px;
+            min-width: 250px;
             background: var(--bg-body);
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
             background-repeat: no-repeat;
@@ -160,25 +160,13 @@
             white-space: nowrap;
         }
 
-        .btn-primary {
-            background-color: var(--primary);
-            color: #fff;
-        }
-
+        .btn-primary { background-color: var(--primary); color: #fff; }
         .btn-primary:hover { background-color: var(--primary-hover); }
 
-        .btn-ghost {
-            background: transparent;
-            border-color: var(--border);
-            color: var(--text-main);
-        }
-
+        .btn-ghost { background: transparent; border-color: var(--border); color: var(--text-main); }
         .btn-ghost:hover { background: var(--bg-body); }
 
-        .btn-icon-only {
-            padding: 10px;
-            border-radius: 10px;
-        }
+        .btn-icon-only { padding: 10px; border-radius: 10px; }
 
         /* --- Spreadsheet View --- */
         .content {
@@ -202,7 +190,7 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            min-width: 2000px; /* Spreadsheet feel */
+            min-width: 800px;
         }
 
         th {
@@ -241,6 +229,8 @@
             border-right: 2px solid var(--border);
         }
 
+        .hidden { display: none; }
+
         /* --- Badges & Status --- */
         .badge {
             display: inline-flex;
@@ -254,14 +244,9 @@
         }
 
         .badge-success { background: rgba(16, 185, 129, 0.1); color: #059669; }
-        .badge-warning { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+        .badge-orange { background: rgba(249, 115, 22, 0.1); color: #fb923c; }
 
-        .link-text {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
+        .link-text { color: var(--primary); text-decoration: none; font-weight: 600; }
         .link-text:hover { text-decoration: underline; }
 
         /* --- Modal Layout --- */
@@ -288,12 +273,6 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             border: 1px solid var(--border);
             overflow: hidden;
-            animation: modalIn 0.3s ease-out;
-        }
-
-        @keyframes modalIn {
-            from { opacity: 0; transform: translateY(20px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .modal-header {
@@ -304,10 +283,7 @@
             align-items: center;
         }
 
-        .modal-body {
-            padding: 2rem;
-            overflow-y: auto;
-        }
+        .modal-body { padding: 2rem; overflow-y: auto; }
 
         .section-title {
             font-size: 0.85rem;
@@ -321,8 +297,6 @@
             gap: 8px;
         }
 
-        .section-title:first-child { margin-top: 0; }
-
         .form-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -330,11 +304,37 @@
             margin-bottom: 20px;
         }
 
+        .column-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .column-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-body);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .column-item input { width: 18px; height: 18px; accent-color: var(--primary); }
+
         .dynamic-list-box {
             background: var(--bg-body);
             padding: 16px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border);
+        }
+
+        .dynamic-item {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
         }
 
         .modal-footer {
@@ -346,12 +346,8 @@
             background: var(--header-bg);
         }
 
-        /* --- Scrollbars --- */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
-
     </style>
 </head>
 <body>
@@ -379,38 +375,33 @@
     <div class="filter-group-wrapper">
         <div class="input-wrapper">
             <label>Pesquisa</label>
-            <input type="text" id="globalSearch" class="control search-main" placeholder="Buscar por qualquer termo...">
+            <input type="text" id="globalSearch" class="control search-main" placeholder="Buscar...">
         </div>
         
         <div class="input-wrapper">
             <label>Estado</label>
             <select id="filterState" class="control">
-                <option value="">Todos os Estados</option>
+                <option value="">Todos</option>
             </select>
         </div>
 
         <div class="input-wrapper">
             <label>Nível</label>
             <select id="filterType" class="control">
-                <option value="">Todos os Níveis</option>
+                <option value="">Todos</option>
                 <option value="Junior College">Junior College</option>
                 <option value="4-Year University">4-Year University</option>
             </select>
         </div>
-
-        <div class="input-wrapper">
-            <label>Duolingo</label>
-            <select id="filterDuolingo" class="control">
-                <option value="">Qualquer Score</option>
-                <option value="80">80+</option>
-                <option value="90">90+</option>
-                <option value="100">100+</option>
-            </select>
-        </div>
     </div>
     
-    <div id="resultsCount" style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">
-        0 itens carregados
+    <div class="header-actions">
+        <button class="btn btn-ghost" id="btnManageColumns">
+            <i data-lucide="layout"></i> Gerenciar Colunas
+        </button>
+        <div id="resultsCount" style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">
+            0 carregados
+        </div>
     </div>
 </div>
 
@@ -418,22 +409,22 @@
     <div class="table-container">
         <table id="mainTable">
             <thead>
-                <tr>
-                    <th class="sticky-col">Ações</th>
-                    <th>Instituição</th>
-                    <th>Tipo</th>
-                    <th>Localização</th>
-                    <th>Duolingo</th>
-                    <th>NJCAA</th>
-                    <th>Esports Link</th>
-                    <th>Jogos</th>
-                    <th>Coaches</th>
-                    <th>Discord</th>
-                    <th>Twitter/X</th>
-                    <th>Tuition</th>
-                    <th>Total Anual</th>
-                    <th>Bolsa Mín.</th>
-                    <th>Cursos</th>
+                <tr id="tableHeaderRow">
+                    <th class="sticky-col" data-col="actions">Ações</th>
+                    <th data-col="nome">Instituição</th>
+                    <th data-col="tipo">Tipo</th>
+                    <th data-col="local">Localização</th>
+                    <th data-col="duo">Duolingo</th>
+                    <th data-col="njcaa">NJCAA</th>
+                    <th data-col="esports_link">Esports Link</th>
+                    <th data-col="jogos">Jogos</th>
+                    <th data-col="coaches">Coaches</th>
+                    <th data-col="discord">Discord</th>
+                    <th data-col="twitter">Twitter/X</th>
+                    <th data-col="tuition">Tuition</th>
+                    <th data-col="total">Total Anual</th>
+                    <th data-col="bolsa">Bolsa Mín.</th>
+                    <th data-col="cursos">Cursos</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
@@ -443,7 +434,26 @@
     </div>
 </div>
 
-<!-- Modal Editor -->
+<!-- Modal Colunas -->
+<div class="modal" id="columnsModal">
+    <div class="modal-card" style="max-width: 600px;">
+        <div class="modal-header">
+            <h2 style="margin:0; font-size:1.25rem;">Exibir Colunas</h2>
+            <button class="btn btn-ghost btn-icon-only" onclick="closeColumnsModal()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+            <p style="color:var(--text-secondary); margin-bottom: 20px;">Marque as colunas que deseja visualizar na tabela principal:</p>
+            <div class="column-picker-grid" id="columnPicker">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="closeColumnsModal()">Aplicar e Fechar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editor Completo Restaurado -->
 <div class="modal" id="editModal">
     <div class="modal-card">
         <div class="modal-header">
@@ -453,7 +463,6 @@
             </div>
             <button class="btn btn-ghost btn-icon-only" onclick="closeModal()"><i data-lucide="x"></i></button>
         </div>
-        
         <div class="modal-body">
             <input type="hidden" id="edit-id">
             
@@ -554,7 +563,6 @@
             <div class="section-title"><i data-lucide="message-square" size="16"></i> Observações</div>
             <textarea id="edit-obs" rows="4" class="control" style="width:100%; resize: none;"></textarea>
         </div>
-
         <div class="modal-footer">
             <button class="btn btn-ghost" onclick="closeModal()">Descartar</button>
             <button class="btn btn-primary" id="saveBtn"><i data-lucide="save"></i> Salvar Alterações</button>
@@ -582,43 +590,71 @@
     const colRef = collection(db, colName);
 
     let universities = [];
+    
+    // --- Gerenciamento de Colunas ---
+    const columnDefinitions = [
+        { id: 'nome', label: 'Instituição' },
+        { id: 'tipo', label: 'Tipo' },
+        { id: 'local', label: 'Localização' },
+        { id: 'duo', label: 'Duolingo' },
+        { id: 'njcaa', label: 'NJCAA' },
+        { id: 'esports_link', label: 'Esports Link' },
+        { id: 'jogos', label: 'Jogos' },
+        { id: 'coaches', label: 'Coaches' },
+        { id: 'discord', label: 'Discord' },
+        { id: 'twitter', label: 'Twitter/X' },
+        { id: 'tuition', label: 'Tuition' },
+        { id: 'total', label: 'Total Anual' },
+        { id: 'bolsa', label: 'Bolsa Mín.' },
+        { id: 'cursos', label: 'Cursos' }
+    ];
 
-    // --- Lucide Icons ---
-    function updateIcons() {
-        lucide.createIcons();
+    let visibleColumns = JSON.parse(localStorage.getItem('visibleCols')) || columnDefinitions.map(c => c.id);
+
+    function initColumnPicker() {
+        const picker = document.getElementById('columnPicker');
+        picker.innerHTML = columnDefinitions.map(col => `
+            <label class="column-item">
+                <input type="checkbox" value="${col.id}" ${visibleColumns.includes(col.id) ? 'checked' : ''} onchange="toggleColumnVisibility('${col.id}')">
+                <span>${col.label}</span>
+            </label>
+        `).join('');
     }
 
-    // --- Theme Control ---
-    const themeToggle = document.getElementById('themeToggle');
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.body.setAttribute('data-theme', savedTheme);
-    themeToggle.innerHTML = savedTheme === 'dark' ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
+    window.toggleColumnVisibility = (colId) => {
+        if (visibleColumns.includes(colId)) {
+            visibleColumns = visibleColumns.filter(id => id !== colId);
+        } else {
+            visibleColumns.push(colId);
+        }
+        localStorage.setItem('visibleCols', JSON.stringify(visibleColumns));
+        applyFilters();
+    };
 
-    themeToggle.addEventListener('click', () => {
-        const currentTheme = document.body.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.body.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        themeToggle.innerHTML = newTheme === 'dark' ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
-        updateIcons();
-    });
+    window.closeColumnsModal = () => document.getElementById('columnsModal').style.display = 'none';
+    document.getElementById('btnManageColumns').onclick = () => {
+        initColumnPicker();
+        document.getElementById('columnsModal').style.display = 'flex';
+        lucide.createIcons();
+    };
 
+    // --- Firebase & Render ---
     onSnapshot(colRef, (snapshot) => {
         universities = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         populateStateFilter();
         applyFilters();
+        lucide.createIcons();
         
         const syncLabel = document.getElementById('syncStatus');
         syncLabel.style.display = 'inline-flex';
         setTimeout(() => syncLabel.style.display = 'none', 3000);
-        updateIcons();
     });
 
     function populateStateFilter() {
         const select = document.getElementById('filterState');
         const currentVal = select.value;
         const states = [...new Set(universities.map(u => u.localizacao?.estado).filter(Boolean))].sort();
-        select.innerHTML = '<option value="">Todos os Estados</option>' + 
+        select.innerHTML = '<option value="">Todos</option>' + 
             states.map(s => `<option value="${s}" ${s === currentVal ? 'selected' : ''}>${s}</option>`).join('');
     }
 
@@ -626,39 +662,31 @@
         const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
         const stateTerm = document.getElementById('filterState').value;
         const typeTerm = document.getElementById('filterType').value;
-        const duolingoMin = parseInt(document.getElementById('filterDuolingo').value) || 0;
 
         const filtered = universities.filter(u => {
-            const nome = u.info_geral?.nome || "";
-            const cidade = u.localizacao?.cidade || "";
-            const estado = u.localizacao?.estado || "";
-            
-            const matchesSearch = !searchTerm || 
-                (nome.toLowerCase().includes(searchTerm) || 
-                 cidade.toLowerCase().includes(searchTerm) ||
-                 estado.toLowerCase().includes(searchTerm));
-            
-            const matchesState = !stateTerm || estado === stateTerm;
-            const matchesType = !typeTerm || (u.info_geral?.tipo && u.info_geral.tipo.includes(typeTerm));
-            const duoScore = parseInt(u.academicos?.duolingo) || 0;
-            const matchesDuo = duoScore >= duolingoMin;
-
-            return matchesSearch && matchesState && matchesType && matchesDuo;
+            const matchesSearch = !searchTerm || u.info_geral?.nome?.toLowerCase().includes(searchTerm) || u.localizacao?.cidade?.toLowerCase().includes(searchTerm);
+            const matchesState = !stateTerm || u.localizacao?.estado === stateTerm;
+            const matchesType = !typeTerm || u.info_geral?.tipo?.includes(typeTerm);
+            return matchesSearch && matchesState && matchesType;
         });
 
         document.getElementById('resultsCount').innerText = `${filtered.length} itens encontrados`;
         renderTable(filtered);
-        updateIcons();
     }
 
-    document.getElementById('globalSearch').oninput = applyFilters;
-    document.getElementById('filterState').onchange = applyFilters;
-    document.getElementById('filterType').onchange = applyFilters;
-    document.getElementById('filterDuolingo').onchange = applyFilters;
-
     function renderTable(data) {
+        const headerCells = document.querySelectorAll('#tableHeaderRow th');
+        headerCells.forEach(th => {
+            const colId = th.getAttribute('data-col');
+            if (colId !== 'actions') {
+                th.classList.toggle('hidden', !visibleColumns.includes(colId));
+            }
+        });
+
         const body = document.getElementById('tableBody');
         body.innerHTML = data.map(u => {
+            const getCol = (id, content) => `<td class="${visibleColumns.includes(id) ? '' : 'hidden'}">${content}</td>`;
+            
             let coachesHtml = "";
             let discordText = "";
             let twitterText = "";
@@ -688,31 +716,29 @@
                 : '-';
 
             return `
-            <tr>
-                <td class="sticky-col">
-                    <button class="btn btn-ghost" style="padding: 6px 12px; font-size: 0.75rem;" onclick="openEdit('${u.id}')">
-                        <i data-lucide="edit-2" size="14"></i> EDITAR
-                    </button>
-                </td>
-                <td title="${u.info_geral?.nome || ''}"><strong>${u.info_geral?.nome || '-'}</strong></td>
-                <td><span class="badge badge-orange">${u.info_geral?.tipo || 'N/A'}</span></td>
-                <td>${u.localizacao?.cidade || ''}, ${u.localizacao?.estado || ''}</td>
-                <td><span class="badge">${u.academicos?.duolingo || '-'}</span></td>
-                <td>${u.esportes_e_jogos?.njcaa || '-'}</td>
-                <td>${esportsLinkHtml}</td>
-                <td>${gamesHtml || '-'}</td>
-                <td>${coachesHtml || '-'}</td>
-                <td><span style="font-family: monospace;">${discordText || '-'}</span></td>
-                <td>${twitterText || '-'}</td>
-                <td>${u.financeiro?.tuition_fees || '-'}</td>
-                <td>${u.financeiro?.room_board || '-'}</td>
-                <td><b style="color:var(--primary)">${u.financeiro?.custo_total || '-'}</b></td>
-                <td><span class="badge badge-success">${u.financeiro?.bolsa || '-'}</span></td>
-                <td title="${u.academicos?.grade_cursos || ''}" style="color:var(--text-secondary); font-style:italic;">${u.academicos?.grade_cursos || '-'}</td>
-            </tr>
-        `}).join('');
+                <tr>
+                    <td class="sticky-col"><button class="btn btn-ghost" onclick="openEdit('${u.id}')">EDITAR</button></td>
+                    ${getCol('nome', `<strong>${u.info_geral?.nome || '-'}</strong>`)}
+                    ${getCol('tipo', `<span class="badge badge-orange">${u.info_geral?.tipo || 'N/A'}</span>`)}
+                    ${getCol('local', `${u.localizacao?.cidade || ''}, ${u.localizacao?.estado || ''}`)}
+                    ${getCol('duo', u.academicos?.duolingo || '-')}
+                    ${getCol('njcaa', u.esportes_e_jogos?.njcaa || '-')}
+                    ${getCol('esports_link', esportsLinkHtml)}
+                    ${getCol('jogos', gamesHtml || '-')}
+                    ${getCol('coaches', coachesHtml || '-')}
+                    ${getCol('discord', discordText || '-')}
+                    ${getCol('twitter', twitterText || '-')}
+                    ${getCol('tuition', u.financeiro?.tuition_fees || '-')}
+                    ${getCol('total', `<b>${u.financeiro?.custo_total || '-'}</b>`)}
+                    ${getCol('bolsa', u.financeiro?.bolsa || '-')}
+                    ${getCol('cursos', u.academicos?.grade_cursos || '-')}
+                </tr>
+            `;
+        }).join('');
+        lucide.createIcons();
     }
 
+    // --- Modal Editor Actions ---
     window.addGameField = (val) => {
         const container = document.getElementById('gamesList');
         const div = document.createElement('div');
@@ -722,7 +748,7 @@
             <button class="btn btn-ghost" style="color:var(--danger); border-color:transparent" onclick="this.parentElement.remove()"><i data-lucide="trash-2" size="16"></i></button>
         `;
         container.appendChild(div);
-        updateIcons();
+        lucide.createIcons();
     };
 
     window.addCoachField = (nome, discord, x) => {
@@ -736,7 +762,7 @@
             <button class="btn btn-ghost" style="color:var(--danger); border-color:transparent" onclick="this.parentElement.remove()"><i data-lucide="trash-2" size="16"></i></button>
         `;
         container.appendChild(div);
-        updateIcons();
+        lucide.createIcons();
     };
 
     window.openEdit = (id) => {
@@ -773,12 +799,12 @@
         }
 
         document.getElementById('editModal').style.display = 'flex';
-        updateIcons();
+        lucide.createIcons();
     };
 
     window.closeModal = () => document.getElementById('editModal').style.display = 'none';
 
-    document.getElementById('btnNew').onclick = () => openEdit('');
+    document.getElementById('btnNew').onclick = () => window.openEdit('');
 
     document.getElementById('saveBtn').onclick = async () => {
         const id = document.getElementById('edit-id').value;
@@ -833,11 +859,19 @@
         }
     };
 
-    window.onclick = (e) => { if(e.target == document.getElementById('editModal')) closeModal(); };
-    
-    window.onload = () => {
-        updateIcons();
+    document.getElementById('globalSearch').oninput = applyFilters;
+    document.getElementById('filterState').onchange = applyFilters;
+    document.getElementById('filterType').onchange = applyFilters;
+
+    const themeBtn = document.getElementById('themeToggle');
+    themeBtn.onclick = () => {
+        const current = document.body.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', next);
+        themeBtn.innerText = next === 'dark' ? '☀️' : '🌙';
     };
+
+    window.onclick = (e) => { if(e.target == document.getElementById('editModal')) closeModal(); };
 </script>
 
 </body>
