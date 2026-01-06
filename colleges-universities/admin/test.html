@@ -554,6 +554,12 @@
                 gamesHtml = activeGames.map(g => `<span class="badge">${g.toUpperCase()}</span>`).join('');
             }
 
+            // --- Lógica do Link de Esports ---
+            const esportsUrl = u.esportes_e_jogos?.link_esports;
+            const esportsLinkHtml = (esportsUrl && esportsUrl.trim() !== "") 
+                ? `<a href="${esportsUrl}" target="_blank">Link</a>` 
+                : '-';
+
             return `
             <tr>
                 <td>
@@ -564,7 +570,7 @@
                 <td>${u.localizacao?.cidade || ''}, ${u.localizacao?.estado || ''}</td>
                 <td>${u.academicos?.duolingo || '-'}</td>
                 <td>${u.esportes_e_jogos?.njcaa || '-'}</td>
-                <td><a href="${u.esportes_e_jogos?.link_esports || '#'}" target="_blank">Link</a></td>
+                <td>${esportsLinkHtml}</td>
                 <td>${gamesHtml || '-'}</td>
                 <td>${coachesHtml || '-'}</td>
                 <td>${discordText || '-'}</td>
