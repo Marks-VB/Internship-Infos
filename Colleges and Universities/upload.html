@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload para Firebase - Universities & Colleges</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding-top: 50px; }
+        .box { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; }
+        input[type="file"] { margin: 20px 0; border: 2px dashed #ddd; padding: 20px; width: 90%; cursor: pointer; }
+        button { background: #0084ff; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #0056b3; }
+        #log { margin-top: 20px; font-size: 14px; color: #555; text-align: left; max-height: 150px; overflow-y: auto; padding: 10px; background: #fafafa; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Upload Modular</h2>
+    <p>Coleção: <strong>universities_and_colleges</strong></p>
+    
+    <input type="file" id="csvSelector" accept=".csv">
+    <button id="btnUpload">Subir Dados</button>
+    
+    <div id="log">Aguardando arquivo...</div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, writeBatch, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBdUtPoAbOkVCGOBeVRgsq5jZXNOur0f_4",
+        authDomain: "internship-infos.firebaseapp.com",
+        projectId: "internship-infos",
+        storageBucket: "internship-infos.firebasestorage.app",
+        messagingSenderId: "642232016135",
+        appId: "1:642232016135:web:e2b5645ed285dd73a439a2",
+        measurementId: "G-HVFS7M6XEC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const logger = document.getElementById('log');
+
+    // Mapeamento Modular dos Campos
+    const formatData = (row) => {
+        return {
+            info_geral: {
+                nome: row["Nome"] || "N/A",
+                tipo: row["Tipo"] || "N/A",
+                descricao: row["Obs"] || "Sem descrição disponível"
+            },
+            localizacao: {
+                cidade: row["Cidade"] || "",
+                estado: row["Estado"] || ""
+            },
+            esportes_e_jogos: {
+                link_esports: row["Esports"] || "",
+                njcaa: row["njcaa "] || "Não",
+                lista_jogos: {
+                    lol: row["LoL"]?.toString().toLowerCase() === 'true',
+                    valorant: false, // Futuro campo
+                    csgo: false      // Futuro campo
+                }
+            },
+            contato_coach: {
+                nome_coach: row["Coach"] || "Não listado",
+                discord: row["Discord"] || "",
+                twitter_x: row["X"] || ""
+            },
+            academicos: {
+                duolingo: row["Duolingo"] || "Consultar",
+                site_admissao: row["Infos"] || "",
+                grade_cursos: row["Cursos"] || ""
+            }
+        };
+    };
+
+    document.getElementById('btnUpload').addEventListener('click', () => {
+        const file = document.getElementById('csvSelector').files[0];
+        if (!file) return alert("Selecione o CSV!");
+
+        logger.innerText = "Lendo CSV...";
+
+        Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            complete: async (results) => {
+                try {
+                    const batch = writeBatch(db);
+                    const colPath = collection(db, "universities_and_colleges");
+
+                    results.data.forEach(row => {
+                        const cleanDoc = formatData(row);
+                        const docRef = doc(colPath);
+                        batch.set(docRef, cleanDoc);
+                    });
+
+                    logger.innerText = "Enviando ao Firebase... aguarde.";
+                    await batch.commit();
+                    logger.innerHTML = "<span style='color:green'>✔ Sucesso! Dados organizados no Firestore.</span>";
+                } catch (e) {
+                    logger.innerHTML = `<span style='color:red'>Erro: ${e.message}</span>`;
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

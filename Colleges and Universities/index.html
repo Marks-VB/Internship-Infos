@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- =========================================
+     * SEO E METADADOS
+     * ========================================= -->
+    <title>Horários de Aulas | Anhanguera Caxias do Sul</title>
+    <meta name="description" content="Consulte sua grade de horários, salas, blocos e professores da Faculdade Anhanguera Caxias do Sul. Acesso rápido a eventos, avisos acadêmicos e localização de aulas.">
+    <meta name="keywords" content="Anhanguera, Caxias do Sul, Horários, Aulas, Salas, Professores, Grade Curricular, Faculdade, EAD, Presencial">
+    <meta name="author" content="Anhanguera Caxias do Sul">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://anhanguera-cxs-horarios.web.app/">
+    <meta property="og:title" content="Horários de Aulas | Anhanguera Caxias do Sul">
+    <meta property="og:description" content="Descubra sua sala e horário de aula em tempo real. Sistema oficial de consulta de horários da Anhanguera Caxias do Sul.">
+    <meta property="og:image" content="https://anhanguera-cxs-horarios.web.app/logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://anhanguera-cxs-horarios.web.app/">
+    <meta property="twitter:title" content="Horários de Aulas | Anhanguera Caxias do Sul">
+    <meta property="twitter:description" content="Descubra sua sala e horário de aula em tempo real.">
+    <meta property="twitter:image" content="https://anhanguera-cxs-horarios.web.app/logo.png">
+
+    <!-- PWA & Favicons -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Horários">
+    
+    <!-- Ícones e Favicon Separado -->
+    <link rel="icon" href="./favicon.ico" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="./logo.svg">
+    <link rel="icon" type="image/png" href="./logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./logo.png">
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Horários">
+    <meta name="msapplication-TileColor" content="#6366f1">
+    <meta name="msapplication-config" content="./browserconfig.xml">
+
+    <style>
+        /* * =========================================
+         * FOLHA DE ESTILOS CSS
+         * =========================================
+         */
+
+        :root {
+            /* Palette Adaptada (Indigo/Slate Theme) */
+            --cor-primaria-inicio: #6366f1; /* Indigo 500 */
+            --cor-primaria-fim: #4f46e5;    /* Indigo 600 */
+            --cor-texto-principal: #1e293b; /* Slate 800 */
+            
+            /* Gradient Background Variables */
+            --bg-gradient-start: #f8fafc;   /* Slate 50 */
+            --bg-gradient-end: #e2e8f0;     /* Slate 200 */
+
+            --cor-fundo-body: #f8fafc;
+            --cor-branco-translucido: rgba(255, 255, 255, 0.90);
+            --cor-borda-padrao: #e2e8f0;    /* Slate 200 */
+            --cor-cinza-suave: #64748b;     /* Slate 500 */
+            
+            --cor-texto-tabela: #334155;    /* Slate 700 */
+            --cor-fundo-tabela-hover: rgba(99, 102, 241, 0.08);
+            --cor-fundo-tabela-par: rgba(241, 245, 249, 0.6); /* Slate 100 alpha */
+            --cor-fundo-tabela: rgba(255, 255, 255, 0.6);
+            
+            --cor-fundo-input: #ffffff;
+            --cor-fundo-autocomplete: #ffffff;
+            --cor-fundo-no-results: #ffffff;
+            --cor-texto-label-mobile: #475569;
+            --cor-sombra-logo: rgba(99, 102, 241, 0.2);
+            --cor-radio-borda: #cbd5e1;
+            --cor-aviso-offline: #64748b;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Theme (Slate Dark) */
+            --cor-primaria-inicio: #818cf8; /* Indigo 400 */
+            --cor-primaria-fim: #6366f1;    /* Indigo 500 */
+            --cor-texto-principal: #f1f5f9; /* Slate 100 */
+            
+            --bg-gradient-start: #0f172a;   /* Slate 900 */
+            --bg-gradient-end: #1e293b;     /* Slate 800 */
+
+            --cor-fundo-body: #0f172a;
+            --cor-branco-translucido: rgba(30, 41, 59, 0.90); /* Slate 800ish */
+            --cor-borda-padrao: #334155;    /* Slate 700 */
+            --cor-cinza-suave: #94a3b8;     /* Slate 400 */
+            
+            --cor-texto-tabela: #e2e8f0;
+            --cor-fundo-tabela-hover: rgba(99, 102, 241, 0.15);
+            --cor-fundo-tabela-par: rgba(30, 41, 59, 0.4);
+            --cor-fundo-tabela: rgba(15, 23, 42, 0.4);
+            
+            --cor-fundo-input: #1e293b;
+            --cor-fundo-autocomplete: #1e293b;
+            --cor-fundo-no-results: #1e293b;
+            --cor-texto-label-mobile: #94a3b8;
+            --cor-sombra-logo: rgba(255, 255, 255, 0.1);
+            --cor-radio-borda: #475569;
+            --cor-aviso-offline: #334155;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; color-scheme: light dark; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            background-color: var(--cor-fundo-body); /* Fallback */
+            background-attachment: fixed; /* Efeito fixo elegante */
+            color: var(--cor-texto-principal);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            padding-top: 60px; /* Espaço para o aviso offline */
+            line-height: 1.6;
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        .container { width: 100%; max-width: 1200px; }
+        
+        /* HEADER */
+        .header {
+            position: relative;
+            text-align: center;
+            margin-bottom: 30px;
+            background: var(--cor-branco-translucido);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background-color 0.3s;
+        }
+        
+        .logo {
+            width: 150px;
+            height: 150px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            border-radius: 20px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        .logo:hover { transform: translateY(-5px); }
+        .logo img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 8px var(--cor-sombra-logo)); }
+        
+        .logo-title {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--cor-primaria-inicio);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .user-greeting {
+            font-size: 1.1em;
+            color: var(--cor-texto-principal);
+            margin-top: 5px;
+            font-weight: 500;
+        }
+        
+        /* HEADER BUTTONS */
+        .header-buttons-wrapper {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: 1px solid var(--cor-borda-padrao);
+            color: var(--cor-texto-principal);
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        .icon-btn:hover { background-color: rgba(0,0,0,0.05); border-color: var(--cor-primaria-inicio); color: var(--cor-primaria-inicio); }
+        [data-theme="dark"] .icon-btn:hover { background-color: rgba(255,255,255,0.1); }
+        .icon-btn svg { width: 20px; height: 20px; }
+
+        #theme-toggle-moon { display: none; }
+        html[data-theme='dark'] #theme-toggle-sun { display: none; }
+        html[data-theme='dark'] #theme-toggle-moon { display: block; }
+        #install-app-btn { display: none; }
+
+        /* OFFLINE BANNER */
+        .offline-banner {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background-color: var(--cor-aviso-offline); color: white;
+            text-align: center; padding: 8px; font-size: 0.9em; font-weight: 500;
+            z-index: 9999; transform: translateY(-100%); transition: transform 0.3s ease;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .offline-banner.show { transform: translateY(0); }
+        .offline-banner svg { width: 16px; height: 16px; }
+
+        /* CONTROLS */
+        .content-container {
+            background: var(--cor-branco-translucido);
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); /* Sombra mais suave */
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+        
+        .search-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .form-group { display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
+        .form-group label { font-weight: 600; margin-bottom: 12px; color: var(--cor-texto-principal); font-size: 1.1em; }
+        .input-wrapper { position: relative; width: 100%; max-width: 320px; }
+
+        .form-group input[type="text"] {
+            padding: 14px 40px 14px 18px;
+            border: 2px solid var(--cor-borda-padrao);
+            border-radius: 12px;
+            font-size: 1em;
+            color: var(--cor-texto-principal);
+            background: var(--cor-fundo-input);
+            width: 100%;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .form-group input[type="text"]:focus { outline: none; border-color: var(--cor-primaria-inicio); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); transform: translateY(-2px); }
+
+        .clear-btn {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            background: transparent; border: none; cursor: pointer; color: var(--cor-cinza-suave);
+            display: none; padding: 6px; border-radius: 50%; transition: all 0.2s ease-in-out;
+        }
+        .clear-btn:hover { color: var(--cor-texto-principal); background-color: var(--cor-borda-padrao); transform: translateY(-50%) scale(1.15); }
+        .input-wrapper input:not(:placeholder-shown) + .clear-btn { display: block; }
+
+        /* AUTOCOMPLETE */
+        .autocomplete-dropdown {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: var(--cor-fundo-autocomplete); border: 1px solid var(--cor-borda-padrao); border-top: none;
+            border-radius: 0 0 12px 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); z-index: 1000;
+            max-height: 200px; overflow-y: auto; display: none;
+        }
+        .autocomplete-dropdown.show { display: block; }
+        .autocomplete-item { padding: 12px 18px; cursor: pointer; transition: background-color 0.2s ease; border-bottom: 1px solid var(--cor-borda-padrao); font-size: 0.95em; }
+        .autocomplete-item:last-child { border-bottom: none; }
+        .autocomplete-item:hover, .autocomplete-item.selected { background-color: var(--cor-fundo-tabela-hover); color: var(--cor-primaria-inicio); }
+        .autocomplete-item .highlight { background-color: rgba(99, 102, 241, 0.1); font-weight: 600; padding: 1px 2px; border-radius: 2px; }
+
+        /* RADIO BUTTONS */
+        .radio-container { display: flex; justify-content: center; gap: 25px; color: var(--cor-texto-principal); align-items: center; margin-top: 20px; width: 100%; flex-wrap: wrap; }
+        .radio-group { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        input[type="radio"] { appearance: none; -webkit-appearance: none; margin: 0; font: inherit; color: var(--cor-radio-borda); width: 1.15em; height: 1.15em; border: 0.15em solid currentColor; border-radius: 50%; transform: translateY(-0.075em); display: grid; place-content: center; cursor: pointer; transition: color 0.3s; }
+        input[type="radio"]::before { content: ""; width: 0.65em; height: 0.65em; border-radius: 50%; transform: scale(0); transition: 120ms transform ease-in-out; box-shadow: inset 1em 1em var(--cor-primaria-inicio); }
+        input[type="radio"]:checked::before { transform: scale(1); }
+        input[type="radio"]:checked { color: var(--cor-primaria-inicio); }
+
+        /* VIEW TOGGLE BUTTON */
+        .control-buttons-container { display: flex; justify-content: center; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
+        .view-toggle-btn {
+            background: linear-gradient(135deg, var(--cor-primaria-inicio), var(--cor-primaria-fim));
+            color: white; border: none; padding: 12px 24px; font-size: 1em; font-weight: 600;
+            border-radius: 12px; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); width: 100%; max-width: 320px;
+        }
+        .view-toggle-btn.active { background: white; color: var(--cor-primaria-inicio); border: 2px solid var(--cor-primaria-inicio); }
+        .view-toggle-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4); }
+
+        /* BTN SECONDARY (Like Clear Filters) */
+        .btn-secondary {
+            background: transparent; border: 2px solid var(--cor-primaria-inicio);
+            color: var(--cor-primaria-inicio); padding: 12px 24px;
+            border-radius: 12px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; font-size: 1em;
+        }
+        .btn-secondary:hover { background: rgba(99, 102, 241, 0.1); }
+
+        /* BACK TO TOP */
+        .back-to-top {
+            position: fixed; bottom: 80px; right: 20px;
+            background: var(--cor-primaria-inicio); color: white;
+            width: 45px; height: 45px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer;
+            opacity: 0; visibility: hidden; transition: all 0.3s;
+            z-index: 1000; border: none;
+        }
+        .back-to-top.show { opacity: 1; visibility: visible; transform: translateY(0); }
+        .back-to-top:hover { transform: translateY(-5px); background: var(--cor-primaria-fim); }
+
+        /* =========================================
+         * EVENTOS E AVISOS (ATUALIZADO)
+         * =========================================
+         */
+        .events-section {
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 30px;
+            display: none; /* Oculto por padrão, aparece se houver eventos */
+            animation: slideIn 0.5s ease;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Espalha título e botão */
+            margin-bottom: 15px;
+            padding: 0 10px;
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--cor-texto-principal);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Estilo do botão de alternar ocultos */
+        .btn-toggle-hidden {
+            background: transparent;
+            border: 1px solid var(--cor-borda-padrao);
+            color: var(--cor-cinza-suave);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: none; /* Oculto por padrão, aparece se houver itens */
+        }
+        .btn-toggle-hidden:hover {
+            background: rgba(0,0,0,0.05);
+            color: var(--cor-texto-principal);
+        }
+        .btn-toggle-hidden.active {
+            background: var(--cor-primaria-inicio);
+            color: white;
+            border-color: var(--cor-primaria-inicio);
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .event-card {
+            background: var(--cor-branco-translucido);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.15);
+            border-color: var(--cor-primaria-inicio);
+        }
+
+        /* Faixa decorativa no topo do card */
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: linear-gradient(to bottom, var(--cor-primaria-inicio), var(--cor-primaria-fim));
+        }
+
+        .event-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--cor-primaria-inicio);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        /* --- CSS PARA AÇÕES DE EVENTOS (Favoritar/Ocultar) --- */
+        .event-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .event-action-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--cor-cinza-suave);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .event-action-btn:hover {
+            transform: scale(1.1);
+            background: white;
+            color: var(--cor-primaria-inicio);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .event-action-btn.is-favorite {
+            color: gold;
+            border-color: gold;
+        }
+
+        /* Estilos para estado de "ocultar" e "restaurar" */
+        .event-action-btn.btn-hide:hover {
+            color: #ef4444; /* Vermelho ao passar o mouse para ocultar */
+        }
+        .event-action-btn.btn-restore:hover {
+            color: #22c55e; /* Verde ao passar o mouse para restaurar */
+        }
+
+        .event-title {
+            font-size: 1.15em;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--cor-texto-principal);
+            padding-right: 0;
+            line-height: 1.3;
+            margin-top: 25px; /* Espaço extra para não colidir com os botões */
+        }
+
+        .event-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: var(--cor-cinza-suave);
+        }
+
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .event-meta-item svg {
+            width: 16px; height: 16px;
+            opacity: 0.7;
+        }
+
+        .event-desc {
+            font-size: 0.95em;
+            color: var(--cor-texto-principal);
+            line-height: 1.5;
+            margin-top: auto; /* Empurra para baixo se o card for alto */
+            padding-top: 15px;
+            border-top: 1px solid var(--cor-borda-padrao);
+        }
+
+        /* TABLE */
+        .table-container {
+            background: var(--cor-branco-translucido); backdrop-filter: blur(15px); border-radius: 20px; overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); border: 1px solid rgba(255, 255, 255, 0.3); transition: background-color 0.3s, opacity 0.3s;
+        }
+        .fade-out { opacity: 0; }
+        .results-table { width: 100%; border-collapse: separate; border-spacing: 0; background-color: transparent; }
+        .results-table thead { display: table-header-group; position: relative; }
+        .results-table thead::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--cor-primaria-inicio), var(--cor-primaria-fim)); z-index: 1; }
+        .results-table th { padding: 16px 10px; text-align: center; font-weight: 600; color: white; background: transparent; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; position: relative; z-index: 2; }
+        .results-table td { text-align: center; padding: 14px 10px; font-size: 0.9em; border-bottom: 1px solid var(--cor-borda-padrao); vertical-align: middle; transition: all 0.3s ease; color: var(--cor-texto-tabela); }
+        .results-table tr { background-color: var(--cor-fundo-tabela); transition: all 0.3s ease; }
+        .results-table tbody tr:hover { background-color: var(--cor-fundo-tabela-hover); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); }
+        .results-table tbody tr:nth-child(even) { background-color: var(--cor-fundo-tabela-par); }
+
+        .no-results { text-align: center; padding: 40px 20px; color: var(--cor-cinza-suave); font-style: italic; background: var(--cor-fundo-no-results); border-radius: 16px; margin-top: 20px; transition: opacity 0.3s; }
+        .footer { width: 100%; text-align: center; padding: 30px 0 10px 0; font-size: 0.9em; color: var(--cor-cinza-suave); }
+        .footer .highlight { color: var(--cor-primaria-inicio); font-weight: bold; }
+
+        /* FAVORITE STAR */
+        .favorite-btn { background: none; border: none; cursor: pointer; font-size: 1.2em; color: var(--cor-cinza-suave); transition: color 0.2s ease-in-out, transform 0.2s ease; padding: 0; line-height: 1; }
+        .favorite-btn:hover { transform: scale(1.2); color: gold; }
+        .favorite-btn.favorited { color: gold; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+
+        /* ONBOARDING MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px);
+            z-index: 3000; display: none; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        
+        .modal-content {
+            background: var(--cor-fundo-body); width: 90%; max-width: 500px;
+            border-radius: 24px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            position: relative; max-height: 90vh; overflow-y: auto; color: var(--cor-texto-principal);
+        }
+
+        .step-container { display: none; flex-direction: column; align-items: center; text-align: center; animation: slideIn 0.3s ease; }
+        .step-container.active { display: flex; }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .modal-title { font-size: 1.8em; color: var(--cor-primaria-inicio); margin-bottom: 10px; font-weight: 800; }
+        .modal-desc { color: var(--cor-cinza-suave); margin-bottom: 25px; }
+        
+        .step-input { 
+            width: 100%; padding: 15px; border-radius: 12px; border: 2px solid var(--cor-borda-padrao);
+            background: var(--cor-fundo-input); color: var(--cor-texto-principal); font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        
+        .subjects-grid {
+            display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; text-align: left;
+            max-height: 300px; overflow-y: auto; padding: 5px; margin-bottom: 20px;
+        }
+        .subject-checkbox {
+            display: flex; align-items: center; padding: 12px; border-radius: 10px;
+            background: var(--cor-fundo-tabela); border: 1px solid var(--cor-borda-padrao);
+            cursor: pointer; transition: all 0.2s;
+        }
+        .subject-checkbox:hover { border-color: var(--cor-primaria-inicio); }
+        .subject-checkbox.checked { background: rgba(99, 102, 241, 0.1); border-color: var(--cor-primaria-inicio); }
+        .subject-checkbox input { margin-right: 12px; transform: scale(1.2); accent-color: var(--cor-primaria-inicio); }
+
+        .modal-btn {
+            background: var(--cor-primaria-inicio); color: white; border: none; padding: 12px 30px;
+            border-radius: 12px; font-size: 1.1em; font-weight: 600; cursor: pointer; width: 100%;
+            transition: opacity 0.2s;
+        }
+        .modal-btn:hover { opacity: 0.9; }
+        .modal-btn-secondary { background: transparent; color: var(--cor-cinza-suave); margin-top: 10px; }
+        
+        /* Nova estilização para opções de modalidade */
+        .modality-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: var(--cor-fundo-input); 
+            border: 2px solid var(--cor-borda-padrao);
+            color: var(--cor-texto-principal); 
+            padding: 20px; 
+            border-radius: 16px;
+            font-size: 1.1em; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            width: 100%; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .option-btn:hover { 
+            border-color: var(--cor-primaria-inicio); 
+            color: var(--cor-primaria-inicio); 
+            background: rgba(99, 102, 241, 0.05);
+            transform: translateY(-2px);
+        }
+        .option-icon { font-size: 1.5em; }
+
+        /* NOTIFICATION */
+        .update-notification {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            padding: 15px 25px; background-color: white; border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1); z-index: 2000;
+            display: flex; align-items: center; gap: 15px; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .update-notification.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(-20px); }
+        .update-notification span { font-weight: 500; color: var(--cor-texto-principal); }
+        .update-notification .update-btn {
+            background: linear-gradient(135deg, var(--cor-primaria-inicio), var(--cor-primaria-fim));
+            color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600;
+            cursor: pointer; transition: transform 0.2s;
+        }
+
+        /* RESPONSIVE */
+        @media screen and (min-width: 769px) { .search-grid { grid-template-columns: 1fr 1fr 1fr; } .subjects-grid { grid-template-columns: 1fr 1fr; } }
+        @media screen and (max-width: 768px) {
+            .table-container { background: transparent; backdrop-filter: none; box-shadow: none; border: none; overflow: visible; }
+            body { padding: 15px; padding-top: 60px; }
+            .logo-title { font-size: 1.8em; }
+            .search-grid { flex-direction: column; gap: 20px; align-items: center; }
+            .results-table thead { display: none; }
+            .results-table tbody { display: flex; flex-direction: column; gap: 20px; }
+            .results-table, .results-table tr, .results-table td { display: block; width: 100%; }
+            .results-table tr { border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); background: var(--cor-branco-translucido); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); }
+            .results-table td { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; text-align: right; border-bottom: 1px solid var(--cor-borda-padrao); font-size: 1em; position: relative; }
+            .results-table td:before { content: attr(data-label) ":"; text-align: left; font-weight: 600; color: var(--cor-texto-label-mobile); font-size: 0.9em; margin-right: 10px; }
+            .results-table td:first-child { background: linear-gradient(135deg, var(--cor-primaria-inicio), var(--cor-primaria-fim)); color: white; font-weight: 700; font-size: 1.1em; display: block; text-align: center; padding: 20px; border-bottom: 2px solid rgba(255, 255, 255, 0.2); position: relative; }
+            .results-table td:first-child:before { display: none; }
+            .results-table td:last-child { border-bottom: none; }
+            /* Se quiser mostrar o favorito no mobile, remova as duas linhas abaixo */
+            .results-table th:last-child { display: block; }
+            .results-table td[data-label="Favorito"] { display: flex; justify-content: center; }
+            
+            .mobile-favorite-container { position: absolute; top: 50%; left: 10px; transform: translateY(-50%); width: 35px; height: 35px; background-color: white; border-radius: 50%; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); display: flex; align-items: center; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- OFFLINE BANNER -->
+    <div id="offline-banner" class="offline-banner">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22"></path><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path><path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+        <span>Você está offline. Exibindo dados salvos.</span>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div class="header-buttons-wrapper">
+                <!-- Botão de Configuração do Usuário -->
+                <button id="config-btn" class="icon-btn" title="Minhas Preferências">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+                <button id="theme-toggle" class="icon-btn" title="Alternar tema">
+                    <svg id="theme-toggle-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    <svg id="theme-toggle-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+                <button id="install-app-btn" class="icon-btn" title="Instalar aplicativo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                </button>
+            </div>
+            
+            <div id="logo-refresh" class="logo" title="Recarregar Horários">
+                <img src="./logo.svg" alt="Logo">
+            </div>
+            <h1 class="logo-title">Encontre-se :)</h1>
+            <p id="user-greeting" class="user-greeting"></p>
+        </header>
+
+        <div class="content-container">
+            <div class="search-grid">
+                <div class="form-group">
+                    <label for="curso">Curso:</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="curso" placeholder="Digite o curso..." autocomplete="off">
+                        <button class="clear-btn" data-target="curso"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828l6.879-6.879zm.66 11.34L3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293l.16-.16z"/></svg></button>
+                        <div class="autocomplete-dropdown" id="curso-dropdown"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="professor">Professor:</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="professor" placeholder="Digite o professor..." autocomplete="off">
+                        <button class="clear-btn" data-target="professor"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828l6.879-6.879zm.66 11.34L3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293l.16-.16z"/></svg></button>
+                        <div class="autocomplete-dropdown" id="professor-dropdown"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="disciplina">Disciplina:</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="disciplina" placeholder="Digite a disciplina..." autocomplete="off">
+                        <button class="clear-btn" data-target="disciplina"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828l6.879-6.879zm.66 11.34L3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293l.16-.16z"/></svg></button>
+                        <div class="autocomplete-dropdown" id="disciplina-dropdown"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="radio-container">
+                <div class="radio-group"><input type="radio" id="todas" name="modalidade" value="" checked><label for="todas">Todas</label></div>
+                <div class="radio-group"><input type="radio" id="ead" name="modalidade" value="EAD"><label for="ead">EAD</label></div>
+                <div class="radio-group"><input type="radio" id="presencial" name="modalidade" value="Presencial"><label for="presencial">Presencial</label></div>
+            </div>
+            <div class="control-buttons-container">
+                <button id="clear-filters-btn" class="btn-secondary" style="display:none;">Limpar Filtros</button>
+                <button id="view-toggle-btn" class="view-toggle-btn">Ver Minhas Aulas</button>
+            </div>
+        </div>
+
+        <!-- SESSÃO DE EVENTOS (NOVO) -->
+        <div id="events-section" class="events-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria-inicio)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    Avisos & Eventos
+                </h2>
+                <!-- Botão Toggle para Ver Ocultos -->
+                <button id="btn-toggle-hidden" class="btn-toggle-hidden" onclick="window.toggleHiddenView()">
+                    Ver Ocultos
+                </button>
+            </div>
+            <div id="events-grid" class="events-grid">
+                <!-- Cards serão injetados aqui via JS -->
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Curso</th><th>Disciplina</th><th>Dia</th><th>Professor</th><th>Horário</th><th>Modalidade</th><th>Bloco</th><th>Sala</th><th>Andar</th><th>Favorito</th>
+                    </tr>
+                </thead>
+                <tbody id="resultados"></tbody>
+            </table>
+        </div>
+        
+        <div id="no-results" class="no-results" style="display: none;">Carregando...</div>
+    </div>
+    
+    <button id="back-to-top" class="back-to-top" title="Voltar ao topo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+    </button>
+
+    <!-- ONBOARDING MODAL -->
+    <div id="onboarding-modal" class="modal-overlay">
+        <div class="modal-content">
+            <!-- Passo 1: Nome -->
+            <div id="step-name" class="step-container active">
+                <h3 class="modal-title">Olá! 👋</h3>
+                <p class="modal-desc">Para começarmos, como você gostaria de ser chamado?</p>
+                <input type="text" id="input-name" class="step-input" placeholder="Seu nome">
+                <button onclick="nextStep(2)" class="modal-btn">Continuar</button>
+                <button onclick="pularEtapa(2)" class="modal-btn modal-btn-secondary" style="margin-top: 5px; font-size: 0.9em;">Pular etapa</button>
+                <button onclick="skipOnboarding()" class="modal-btn modal-btn-secondary" style="font-size: 0.9em; margin-top: 15px;">Pular configuração</button>
+            </div>
+
+            <!-- Passo 2: Modalidade -->
+            <div id="step-modality" class="step-container">
+                <h3 class="modal-title">Modalidade 🏫</h3>
+                <p class="modal-desc">Você estuda presencialmente ou a distância?</p>
+                
+                <div class="modality-options">
+                    <button onclick="selectModality('Presencial')" class="option-btn">
+                        <span class="option-icon">🏢</span>
+                        <span>Presencial</span>
+                    </button>
+                    <button onclick="selectModality('EAD')" class="option-btn">
+                        <span class="option-icon">💻</span>
+                        <span>EAD</span>
+                    </button>
+                </div>
+                
+                <div style="width: 100%; display: flex; flex-direction: column; gap: 5px;">
+                    <button onclick="pularEtapa(3)" class="modal-btn modal-btn-secondary" style="margin-top: 0;">Pular etapa</button>
+                    <button onclick="prevStep(1)" class="modal-btn modal-btn-secondary" style="margin-top: 0;">Voltar</button>
+                </div>
+            </div>
+
+            <!-- Passo 3: Curso -->
+            <div id="step-course" class="step-container">
+                <h3 class="modal-title">Qual seu curso? 🎓</h3>
+                <p class="modal-desc">Isso ajuda a filtrar as matérias certas para você.</p>
+                <div class="input-wrapper" style="width:100%; margin-bottom: 20px;">
+                    <input type="text" id="input-course-setup" class="step-input" placeholder="Digite seu curso..." autocomplete="off" style="margin-bottom:0;">
+                    <div class="autocomplete-dropdown" id="setup-course-dropdown"></div>
+                </div>
+                <button onclick="nextStep(4)" class="modal-btn">Continuar</button>
+                <button onclick="pularEtapa(4)" class="modal-btn modal-btn-secondary" style="margin-top: 10px;">Pular etapa</button>
+                <button onclick="prevStep(2)" class="modal-btn modal-btn-secondary">Voltar</button>
+            </div>
+
+            <!-- Passo 4: Disciplinas -->
+            <div id="step-subjects" class="step-container">
+                <h3 class="modal-title">Suas Matérias 📚</h3>
+                <p class="modal-desc">Selecione as disciplinas que você está cursando este semestre.</p>
+                <div id="subjects-list" class="subjects-grid"></div>
+                <button onclick="finishSetup()" class="modal-btn">Concluir</button>
+                <button onclick="finishSetup()" class="modal-btn modal-btn-secondary" style="margin-top: 10px;">Pular etapa</button>
+                <button onclick="prevStep(3)" class="modal-btn modal-btn-secondary">Voltar</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">Desenvolvido com <span class="highlight">♥</span> pela <span class="highlight">Anhanguera</span> Caxias do Sul.</footer>
+    
+    <script type="module">
+        // --- CONFIGURAÇÃO DE AMBIENTE ---
+        const HOMOLOGACAO = false; // Defina como true para ambiente de testes, false para produção
+
+        // Lógica de Homologação (Visual)
+        if (HOMOLOGACAO) {
+            document.title = "(Homologação) " + document.title;
+            console.warn("⚠️ Ambiente de Homologação Ativo");
+        }
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where, initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDaG_hFJ3VguaBjwOOXRCYbqmmt_aEE61w",
+            authDomain: "anhanguera-cxs-horarios.firebaseapp.com",
+            projectId: "anhanguera-cxs-horarios",
+            storageBucket: "anhanguera-cxs-horarios.firebasestorage.app",
+            messagingSenderId: "662492329180",
+            appId: "1:662492329180:web:3656c8527d2c817aebf019",
+            measurementId: "G-NSG675FQF2"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        
+        // Habilita persistência offline do Firestore (Nova Sintaxe)
+        const db = initializeFirestore(app, {
+            localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) 
+        });
+
+        // --- GLOBAL STATE ---
+        window.currentStep = 1;
+        window.userProfile = { name: '', modality: '', course: '', subjects: [] };
+        window.dados = [];
+        window.cursos = [];
+        window.isMyClassesMode = false;
+        window.favoritos = [];
+        window.hiddenEvents = JSON.parse(localStorage.getItem('hiddenEvents') || '[]');
+        window.favoriteEvents = JSON.parse(localStorage.getItem('favoriteEvents') || '[]');
+        window.showingHidden = false; // Estado para controlar a visualização de ocultos
+
+        // Service Worker Variable
+        let newWorker = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Logic (Automático + Manual)
+            const themeToggle = document.getElementById('theme-toggle');
+            const htmlElement = document.documentElement;
+            
+            const applyTheme = (theme) => {
+                htmlElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+            };
+
+            // Detecta preferência salva ou do sistema
+            const getPreferredTheme = () => {
+                const saved = localStorage.getItem('theme');
+                if (saved) return saved;
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            };
+
+            // Aplica tema inicial
+            applyTheme(getPreferredTheme());
+
+            // Escuta mudanças do sistema (Automático)
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (!localStorage.getItem('theme')) { // Só muda se o usuário não tiver forçado uma preferência
+                    applyTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+
+            themeToggle.addEventListener('click', () => {
+                const current = htmlElement.getAttribute('data-theme');
+                applyTheme(current === 'dark' ? 'light' : 'dark');
+            });
+
+            // Offline UI Logic
+            const offlineBanner = document.getElementById('offline-banner');
+            const updateOnlineStatus = () => {
+                if (!navigator.onLine) {
+                    offlineBanner.classList.add('show');
+                } else {
+                    offlineBanner.classList.remove('show');
+                }
+            };
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            updateOnlineStatus(); // Check inicial
+
+            // Elements
+            const cursoInput = document.getElementById('curso');
+            const professorInput = document.getElementById('professor');
+            const disciplinaInput = document.getElementById('disciplina');
+            const viewToggleButton = document.getElementById('view-toggle-btn');
+            const logoRefresh = document.getElementById('logo-refresh');
+            const configBtn = document.getElementById('config-btn');
+            const installAppBtn = document.getElementById('install-app-btn');
+
+            // --- PWA LOGIC (Install Button & Service Worker) ---
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./service-worker.js').then(reg => {
+                    console.log('✅ Service Worker registrado:', reg.scope);
+                    reg.addEventListener('updatefound', () => {
+                        newWorker = reg.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                console.log('Nova versão disponível!');
+                            }
+                        });
+                    });
+                }).catch(err => console.error('❌ Erro SW:', err));
+            }
+
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installAppBtn.style.display = 'flex';
+            });
+
+            installAppBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`Instalação: ${outcome}`);
+                    deferredPrompt = null;
+                    installAppBtn.style.display = 'none';
+                }
+            });
+
+            window.addEventListener('appinstalled', () => {
+                installAppBtn.style.display = 'none';
+                console.log('🎉 App instalado!');
+            });
+
+            // --- ONBOARDING LOGIC ---
+            
+            window.nextStep = (step) => {
+                // Validação e Ação
+                if (step === 2 && !document.getElementById('input-name').value.trim()) return alert("Por favor, digite seu nome.");
+                
+                if (step === 2) window.userProfile.name = document.getElementById('input-name').value.trim();
+                
+                if (step === 4) {
+                    if (!document.getElementById('input-course-setup').value.trim()) return alert("Por favor, selecione um curso.");
+                    window.userProfile.course = document.getElementById('input-course-setup').value.trim();
+                    renderSubjectsCheckbox(window.userProfile.course);
+                }
+
+                // Troca tela
+                showStep(step);
+            };
+
+            window.prevStep = (step) => {
+                showStep(step);
+            };
+
+            window.selectModality = (modality) => {
+                window.userProfile.modality = modality;
+                window.nextStep(3); // Avança para o passo 3 (Curso)
+            };
+
+            window.skipOnboarding = () => {
+                localStorage.setItem('onboardingDismissed', 'true');
+                document.getElementById('onboarding-modal').classList.remove('show');
+                
+                // Configura modo padrão (todas as aulas)
+                window.isMyClassesMode = false;
+                updateViewButton();
+                pesquisar();
+                carregarEventos(); // Garante que eventos carregam mesmo se pular
+            };
+
+            window.pularEtapa = (step) => {
+                if (step === 4) {
+                   renderSubjectsCheckbox(''); // Renderiza vazio para evitar erro se curso não foi selecionado
+                }
+                showStep(step);
+            };
+
+            function showStep(step) {
+                document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+                if (step === 1) document.getElementById('step-name').classList.add('active');
+                if (step === 2) document.getElementById('step-modality').classList.add('active');
+                if (step === 3) document.getElementById('step-course').classList.add('active');
+                if (step === 4) document.getElementById('step-subjects').classList.add('active');
+            }
+
+            window.renderSubjectsCheckbox = (courseName) => {
+                const container = document.getElementById('subjects-list');
+                container.innerHTML = '';
+                
+                const normalizedCourse = normalize(courseName);
+                const subjects = [...new Set(window.dados
+                    .filter(d => normalize(d.Curso) === normalizedCourse)
+                    .map(d => d.Disciplina)
+                    .filter(Boolean)
+                )].sort();
+
+                if (subjects.length === 0) {
+                    container.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Nenhuma disciplina encontrada para este curso.</p>';
+                    return;
+                }
+
+                subjects.forEach(sub => {
+                    const label = document.createElement('label');
+                    label.className = 'subject-checkbox';
+                    const isChecked = window.userProfile.subjects.includes(sub) ? 'checked' : '';
+                    if (isChecked) label.classList.add('checked');
+                    
+                    label.innerHTML = `
+                        <input type="checkbox" value="${sub}" ${isChecked}>
+                        <span>${sub}</span>
+                    `;
+                    label.querySelector('input').addEventListener('change', (e) => {
+                        e.target.parentElement.classList.toggle('checked', e.target.checked);
+                    });
+                    container.appendChild(label);
+                });
+            };
+
+            window.finishSetup = () => {
+                // 1. Salva Profile
+                const checked = Array.from(document.querySelectorAll('#subjects-list input:checked')).map(i => i.value);
+                window.userProfile.subjects = checked;
+                localStorage.setItem('userProfile', JSON.stringify(window.userProfile));
+                
+                // 2. Transforma em Favoritos (Nova Lógica)
+                const novasFavoritas = window.dados.filter(d => 
+                    normalize(d.Curso) === normalize(window.userProfile.course) &&
+                    window.userProfile.subjects.includes(d.Disciplina)
+                );
+
+                // Mescla com favoritos existentes, evitando duplicatas
+                const hashesExistentes = new Set(window.favoritos.map(criarHashAula));
+                novasFavoritas.forEach(aula => {
+                    if (!hashesExistentes.has(criarHashAula(aula))) {
+                        window.favoritos.push(aula);
+                    }
+                });
+                
+                salvarFavoritos();
+                
+                // 3. Fecha e Atualiza
+                document.getElementById('onboarding-modal').classList.remove('show');
+                loadUserProfile();
+            };
+
+            function checkOnboarding() {
+                const savedProfile = localStorage.getItem('userProfile');
+                const dismissed = localStorage.getItem('onboardingDismissed');
+                if (!savedProfile && !dismissed) {
+                    document.getElementById('onboarding-modal').classList.add('show');
+                } else {
+                    loadUserProfile();
+                    // Mesmo se não tiver perfil, tenta carregar eventos
+                    if (!savedProfile) carregarEventos();
+                }
+            }
+
+            function loadUserProfile() {
+                const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+                if (profile.name) {
+                    document.getElementById('user-greeting').textContent = `Olá, ${profile.name}!`;
+                    window.userProfile = profile;
+                    
+                    window.isMyClassesMode = true;
+                    updateViewButton();
+                    pesquisar();
+                }
+                // Carrega eventos independentemente de ter perfil completo
+                carregarEventos();
+            }
+
+            configBtn.addEventListener('click', () => {
+                document.getElementById('input-name').value = window.userProfile.name || '';
+                document.getElementById('input-course-setup').value = window.userProfile.course || '';
+                showStep(1); 
+                document.getElementById('onboarding-modal').classList.add('show');
+            });
+
+            // --- DATA LOADING & FAVORITES ---
+            function carregarFavoritos() {
+                try {
+                    const saved = localStorage.getItem('aulasFavoritas');
+                    window.favoritos = saved ? JSON.parse(saved) : [];
+                } catch (e) { console.error(e); }
+            }
+
+            function salvarFavoritos() {
+                localStorage.setItem('aulasFavoritas', JSON.stringify(window.favoritos));
+            }
+
+            function criarHashAula(aula) {
+                return `${aula.Curso}-${aula.Disciplina}-${aula.Dia}-${aula.Horário}`;
+            }
+
+            function isFavorited(aula) {
+                const hash = criarHashAula(aula);
+                return window.favoritos.some(fav => criarHashAula(fav) === hash);
+            }
+
+            window.toggleFavorito = (aula) => {
+                const hash = criarHashAula(aula);
+                if (isFavorited(aula)) {
+                    window.favoritos = window.favoritos.filter(fav => criarHashAula(fav) !== hash);
+                } else {
+                    window.favoritos.push(aula);
+                }
+                salvarFavoritos();
+                pesquisar(); // Re-renderiza para atualizar ícone
+            };
+
+            async function carregarDados() {
+                try {
+                    const noResults = document.getElementById('no-results');
+                    noResults.style.display = 'block'; noResults.textContent = 'Carregando...';
+                    
+                    const querySnapshot = await getDocs(collection(db, "horarios"));
+                    let dadosBrutos = [];
+                    querySnapshot.forEach(doc => dadosBrutos.push(doc.data()));
+                    
+                    // Normalização
+                    window.dados = dadosBrutos.map(d => {
+                        let obj = d;
+                        const keySemi = Object.keys(d).find(k => k.includes(';') && k.length > 10);
+                        if (keySemi) {
+                            const headers = keySemi.replace(/^\uFEFF/, '').split(';').map(h => h.trim());
+                            const vals = String(d[keySemi]).split(';');
+                            obj = {}; headers.forEach((h, i) => obj[h] = (vals[i]||'').trim());
+                        }
+                        
+                        const get = (k) => {
+                            const found = Object.keys(obj).find(x => normalize(x) === normalize(k));
+                            if (found) return obj[found];
+                            if (normalize(k) === 'modelo') return Object.keys(obj).find(x => normalize(x).includes('modelo') || normalize(x).includes('modalidade')) ? obj[Object.keys(obj).find(x => normalize(x).includes('modelo') || normalize(x).includes('modalidade'))] : '';
+                            return '';
+                        };
+
+                        return {
+                            Curso: get('Curso'), Disciplina: get('Disciplina'), Dia: get('Dia'),
+                            Professor: get('Professor'), Horário: get('Horário') || get('Horario'),
+                            Modelo: get('Modelo'), Bloco: get('Bloco'), Sala: get('Sala'), Andar: get('Andar')
+                        };
+                    });
+
+                    console.log(`✅ ${window.dados.length} aulas carregadas.`);
+                    window.cursos = [...new Set(window.dados.map(i => i.Curso).filter(Boolean))].sort();
+                    
+                    // Setup Autocompletes
+                    setupAutocomplete(document.getElementById('curso'), window.cursos);
+                    setupAutocomplete(document.getElementById('professor'), [...new Set(window.dados.map(i => i.Professor).filter(Boolean))].sort());
+                    setupAutocomplete(document.getElementById('disciplina'), [...new Set(window.dados.map(i => i.Disciplina).filter(Boolean))].sort());
+                    
+                    const setupInput = document.getElementById('input-course-setup');
+                    setupInput.addEventListener('input', (e) => {
+                        const val = e.target.value;
+                        const dropdown = document.getElementById('setup-course-dropdown');
+                        dropdown.innerHTML = '';
+                        if (!val) { dropdown.classList.remove('show'); return; }
+                        
+                        const filtered = window.cursos.filter(c => normalize(c).includes(normalize(val))).slice(0, 5);
+                        filtered.forEach(c => {
+                            const div = document.createElement('div');
+                            div.className = 'autocomplete-item';
+                            div.textContent = c;
+                            div.onclick = () => {
+                                setupInput.value = c;
+                                dropdown.classList.remove('show');
+                            };
+                            dropdown.appendChild(div);
+                        });
+                        dropdown.classList.add('show');
+                    });
+
+                    carregarFavoritos();
+                    checkOnboarding();
+                    pesquisar();
+
+                } catch (e) {
+                    console.error(e);
+                    document.getElementById('no-results').textContent = 'Erro ao carregar. Tente recarregar.';
+                }
+            }
+
+            // --- EVENTOS LOGIC (ATUALIZADO) ---
+            async function carregarEventos() {
+                try {
+                    const eventsContainer = document.getElementById('events-section');
+                    const eventsGrid = document.getElementById('events-grid');
+                    
+                    // Filtragem rigorosa por data (apenas hoje ou futuro)
+                    const hoje = new Date();
+                    const y = hoje.getFullYear();
+                    const m = String(hoje.getMonth() + 1).padStart(2, '0');
+                    const d = String(hoje.getDate()).padStart(2, '0');
+                    const dataHoje = `${y}-${m}-${d}`;
+
+                    // Query Firestore: Filtra no servidor por data >= hoje
+                    const q = query(collection(db, "eventos_aprovados"), where("data", ">=", dataHoje));
+                    const querySnapshot = await getDocs(q);
+
+                    let eventos = [];
+
+                    querySnapshot.forEach(doc => {
+                        const data = doc.data();
+                        const eventId = doc.id; 
+
+                        // LÓGICA DE FILTRO VISUAL (OCULTOS): 
+                        const isHidden = window.hiddenEvents.includes(eventId);
+                        
+                        if (window.showingHidden) {
+                            if (!isHidden) return; // Se o modo é ver ocultos, pula os visíveis
+                        } else {
+                            if (isHidden) return; // Se o modo é normal, pula os ocultos
+                        }
+                        
+                        // Normaliza strings para comparação segura
+                        const cursoUsuario = window.userProfile?.course ? normalize(window.userProfile.course) : null;
+                        const cursoEvento = normalize(data.cursoAlvo);
+
+                        // Data do evento para exibição
+                        const dataPartes = data.data.split('-');
+                        const dataEvento = new Date(dataPartes[0], dataPartes[1] - 1, dataPartes[2]);
+
+                        // Regra de relevância:
+                        const ehRelevante = !cursoUsuario || cursoEvento === cursoUsuario || cursoEvento === 'todos';
+
+                        if (ehRelevante) {
+                            eventos.push({ ...data, dataObj: dataEvento, id: eventId });
+                        }
+                    });
+
+                    // Ordena por favoritos primeiro, depois data
+                    eventos.sort((a, b) => {
+                        const isFavA = window.favoriteEvents.includes(a.id);
+                        const isFavB = window.favoriteEvents.includes(b.id);
+                        if (isFavA && !isFavB) return -1;
+                        if (!isFavA && isFavB) return 1;
+                        return a.dataObj - b.dataObj;
+                    });
+
+                    // Atualiza o botão de toggle (contador)
+                    const btnToggle = document.getElementById('btn-toggle-hidden');
+                    if (btnToggle && !window.showingHidden) {
+                        btnToggle.textContent = `Ver Ocultos (${window.hiddenEvents.length})`;
+                        // Mostra o botão apenas se houver itens ocultos
+                        btnToggle.style.display = window.hiddenEvents.length > 0 ? 'block' : 'none';
+                    }
+
+                    if (eventos.length > 0) {
+                        eventsGrid.innerHTML = '';
+                        eventos.forEach(evt => {
+                            const diaStr = evt.dataObj.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                            const diaSemana = evt.dataObj.toLocaleDateString('pt-BR', { weekday: 'short' });
+                            const isFav = window.favoriteEvents.includes(evt.id);
+                            
+                            // Define qual botão de ação mostrar (Ocultar ou Restaurar)
+                            const actionBtnHtml = window.showingHidden 
+                                ? `<button class="event-action-btn btn-restore" onclick="window.restoreEvent(event, '${evt.id}')" title="Restaurar evento">↺</button>`
+                                : `<button class="event-action-btn btn-hide" onclick="window.hideEvent(event, '${evt.id}')" title="Ocultar evento">✕</button>`;
+
+                            const card = document.createElement('div');
+                            card.className = 'event-card';
+                            card.id = `card-${evt.id}`;
+                            
+                            card.innerHTML = `
+                                <div class="event-badge">${diaStr} • ${diaSemana}</div>
+                                
+                                <div class="event-actions">
+                                    <button class="event-action-btn ${isFav ? 'is-favorite' : ''}" onclick="window.toggleEventFavorite('${evt.id}')" title="Favoritar">
+                                        ${isFav ? '★' : '☆'}
+                                    </button>
+                                    ${actionBtnHtml}
+                                </div>
+
+                                <h3 class="event-title">${evt.titulo}</h3>
+                                <div class="event-meta">
+                                    <div class="event-meta-item">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        <span>${evt.horario} (${evt.turno})</span>
+                                    </div>
+                                    <div class="event-meta-item">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                        <span>${evt.local} - ${evt.andar}</span>
+                                    </div>
+                                    <div class="event-meta-item">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                        <span>${evt.nomePessoa}</span>
+                                    </div>
+                                </div>
+                                <div class="event-desc">${evt.descricao}</div>
+                            `;
+                            eventsGrid.appendChild(card);
+                        });
+                        eventsContainer.style.display = 'block';
+                    } else {
+                        // LÓGICA CORRIGIDA:
+                        // Se todos os eventos visíveis foram ocultados, mantemos o container visível
+                        // para que o botão "Ver Ocultos" continue acessível.
+                        const temOcultos = window.hiddenEvents.length > 0;
+                        
+                        if (window.showingHidden) {
+                             eventsGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--cor-cinza-suave); padding: 20px;">Nenhum evento oculto encontrado.</p>';
+                             eventsContainer.style.display = 'block';
+                        } else if (temOcultos) {
+                             // Usuário ocultou tudo, mas precisa ver o botão para restaurar
+                             eventsGrid.innerHTML = '<p class="no-events-msg" style="grid-column: 1/-1; text-align: center; color: var(--cor-cinza-suave); padding: 20px;">Todos os eventos foram ocultados. Clique em "Ver Ocultos" para restaurar.</p>';
+                             eventsContainer.style.display = 'block';
+                        } else {
+                             // Realmente não tem nada (nem ativo, nem oculto)
+                             eventsContainer.style.display = 'none';
+                        }
+                    }
+
+                } catch (e) {
+                    console.error("Erro ao carregar eventos:", e);
+                }
+            }
+            
+            // --- NOVAS FUNÇÕES DE AÇÃO GLOBAIS ---
+            window.toggleEventFavorite = (id) => {
+                if (window.favoriteEvents.includes(id)) {
+                    window.favoriteEvents = window.favoriteEvents.filter(fid => fid !== id);
+                } else {
+                    window.favoriteEvents.push(id);
+                }
+                localStorage.setItem('favoriteEvents', JSON.stringify(window.favoriteEvents));
+                carregarEventos(); 
+            };
+
+            // Função para alternar modo de visualização
+            window.toggleHiddenView = () => {
+                window.showingHidden = !window.showingHidden;
+                const btn = document.getElementById('btn-toggle-hidden');
+                
+                if (window.showingHidden) {
+                    btn.textContent = 'Voltar para Ativos';
+                    btn.classList.add('active');
+                    btn.style.display = 'block'; // Garante que fique visível
+                } else {
+                    // Texto será atualizado pelo carregarEventos
+                    btn.classList.remove('active');
+                }
+                carregarEventos();
+            };
+
+            window.hideEvent = (event, id) => {
+                event.stopPropagation(); // Impede propagação
+                if (confirm("Deseja ocultar este aviso? Ele ficará na aba 'Ver Ocultos'.")) {
+                    window.hiddenEvents.push(id);
+                    localStorage.setItem('hiddenEvents', JSON.stringify(window.hiddenEvents));
+                    
+                    const card = document.getElementById(`card-${id}`);
+                    if (card) {
+                        card.style.transition = 'all 0.5s';
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.9)';
+                        setTimeout(() => carregarEventos(), 500);
+                    } else {
+                        carregarEventos();
+                    }
+                }
+            };
+
+            window.restoreEvent = (event, id) => {
+                event.stopPropagation();
+                window.hiddenEvents = window.hiddenEvents.filter(hiddenId => hiddenId !== id);
+                localStorage.setItem('hiddenEvents', JSON.stringify(window.hiddenEvents));
+                carregarEventos();
+            };
+
+            // --- FILTER LOGIC ---
+            function normalize(str) { return String(str||'').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim(); }
+
+            window.pesquisar = () => {
+                const tbody = document.getElementById('resultados');
+                const noResults = document.getElementById('no-results');
+                const tableContainer = document.querySelector('.table-container');
+                
+                tableContainer.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    let results = [];
+                    
+                    if (window.isMyClassesMode) {
+                        // Filtro por "Minhas Aulas" usa a lista de FAVORITOS agora
+                        results = window.favoritos;
+                        
+                        // Opcional: Se quiser filtrar os favoritos por modalidade selecionada no perfil também
+                        if (window.userProfile.modality) {
+                             // Pode descomentar para filtrar favoritos por modalidade
+                             // results = results.filter(r => normalize(r.Modelo) === normalize(window.userProfile.modality));
+                        }
+                    } else {
+                        // Filtro Comum (Busca Geral)
+                        const c = normalize(document.getElementById('curso').value);
+                        const p = normalize(document.getElementById('professor').value);
+                        const d = normalize(document.getElementById('disciplina').value);
+                        const m = document.querySelector('input[name="modalidade"]:checked').value;
+                        
+                        results = window.dados.filter(item => {
+                            if (!item.Curso) return false;
+                            return normalize(item.Curso).includes(c) &&
+                                   normalize(item.Professor).includes(p) &&
+                                   normalize(item.Disciplina).includes(d) &&
+                                   (!m || normalize(item.Modelo) === normalize(m));
+                        });
+                    }
+
+                    // Ordenação
+                    const dias = { "domingo": 0, "segunda feira": 1, "terca feira": 2, "quarta feira": 3, "quinta feira": 4, "sexta feira": 5, "sabado": 6 };
+                    results.sort((a, b) => {
+                        const da = dias[normalize(a.Dia)] || 99;
+                        const db = dias[normalize(b.Dia)] || 99;
+                        if (da !== db) return da - db;
+                        return (a.Horário || '').localeCompare(b.Horário || '');
+                    });
+
+                    // Render
+                    tbody.innerHTML = '';
+                    if (results.length === 0) {
+                        tableContainer.style.display = 'none';
+                        noResults.style.display = 'block';
+                        noResults.textContent = window.isMyClassesMode ? 'Você ainda não tem aulas salvas. Clique na engrenagem para configurar.' : 'Nenhuma aula encontrada.';
+                    } else {
+                        tableContainer.style.display = 'block';
+                        noResults.style.display = 'none';
+                        
+                        const isMobile = window.innerWidth < 769;
+                        results.forEach(item => {
+                            const row = tbody.insertRow();
+                            
+                            // Cria botão de favorito
+                            const favBtn = document.createElement('button');
+                            favBtn.className = `favorite-btn ${isFavorited(item) ? 'favorited' : ''}`;
+                            favBtn.innerHTML = '&#9733;';
+                            favBtn.onclick = (e) => { e.stopPropagation(); toggleFavorito(item); };
+
+                            if (isMobile) {
+                                const c1 = row.insertCell();
+                                c1.style.position = 'relative';
+                                // Adiciona estrela no mobile
+                                const starDiv = document.createElement('div');
+                                starDiv.className = 'mobile-favorite-container';
+                                starDiv.appendChild(favBtn);
+                                c1.appendChild(starDiv);
+                                
+                                const span = document.createElement('span');
+                                span.textContent = item.Curso;
+                                c1.appendChild(span);
+
+                                const addCell = (l, v) => { const c = row.insertCell(); c.setAttribute('data-label', l); c.textContent = v || '-'; };
+                                
+                                addCell("Disciplina", item.Disciplina);
+                                addCell("Dia", item.Dia);
+                                addCell("Professor", item.Professor);
+                                addCell("Horário", item.Horário);
+                                addCell("Modalidade", item.Modelo);
+                                addCell("Bloco", item.Bloco);
+                                addCell("Sala", item.Sala);
+                                addCell("Andar", item.Andar);
+                            } else {
+                                const add = (v) => row.insertCell().textContent = v || '-';
+                                add(item.Curso); add(item.Disciplina); add(item.Dia); add(item.Professor);
+                                add(item.Horário); add(item.Modelo); add(item.Bloco); add(item.Sala); add(item.Andar);
+                                
+                                const cFav = row.insertCell();
+                                cFav.appendChild(favBtn);
+                            }
+                        });
+                    }
+                    tableContainer.classList.remove('fade-out');
+                }, 200);
+            };
+
+            function updateViewButton() {
+                const btn = document.getElementById('view-toggle-btn');
+                const clearBtn = document.getElementById('clear-filters-btn');
+                
+                if (window.isMyClassesMode) {
+                    btn.textContent = "Ver Grade Completa (Pesquisar)";
+                    btn.classList.add('active');
+                    document.getElementById('curso').value = '';
+                    document.getElementById('professor').value = '';
+                    document.getElementById('disciplina').value = '';
+                    clearBtn.style.display = 'none'; // Esconde em Minhas Aulas
+                } else {
+                    btn.textContent = "Ver Minhas Aulas";
+                    btn.classList.remove('active');
+                    clearBtn.style.display = 'block'; // Mostra na busca
+                }
+            }
+
+            viewToggleButton.addEventListener('click', () => {
+                if (!window.userProfile.course && window.favoritos.length === 0) {
+                    alert("Configure seu perfil primeiro clicando na engrenagem!");
+                    return;
+                }
+                window.isMyClassesMode = !window.isMyClassesMode;
+                updateViewButton();
+                pesquisar();
+            });
+
+            // Back to top logic
+            const backToTopBtn = document.getElementById('back-to-top');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) backToTopBtn.classList.add('show');
+                else backToTopBtn.classList.remove('show');
+            });
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Clear filters logic
+            const clearFiltersBtn = document.getElementById('clear-filters-btn');
+            clearFiltersBtn.addEventListener('click', () => {
+                document.getElementById('curso').value = '';
+                document.getElementById('professor').value = '';
+                document.getElementById('disciplina').value = '';
+                document.getElementById('todas').checked = true;
+                pesquisar();
+            });
+
+            // Autocomplete Helpers
+            function setupAutocomplete(inp, arr) {
+                inp.addEventListener('input', function() {
+                    const val = this.value;
+                    const list = this.nextElementSibling.nextElementSibling;
+                    list.innerHTML = '';
+                    if (!val) return list.classList.remove('show');
+                    
+                    const matches = arr.filter(i => normalize(i).includes(normalize(val))).slice(0, 5);
+                    matches.forEach(m => {
+                        const d = document.createElement('div');
+                        d.className = 'autocomplete-item';
+                        d.innerHTML = m.replace(new RegExp(`(${val})`, 'gi'), '<span class="highlight">$1</span>');
+                        d.onclick = () => { inp.value = m; list.classList.remove('show'); pesquisar(); };
+                        list.appendChild(d);
+                    });
+                    if(matches.length) list.classList.add('show'); else list.classList.remove('show');
+                });
+            }
+
+            document.addEventListener('click', (e) => {
+                if(!e.target.closest('.input-wrapper')) document.querySelectorAll('.autocomplete-dropdown').forEach(el => el.classList.remove('show'));
+            });
+
+            carregarDados();
+        });
+    </script>
+</body>
+</html>

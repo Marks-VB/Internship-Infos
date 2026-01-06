@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Universidades & Colleges</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #e0e7ff;
+            --bg-body: #f8fafc;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --radius-md: 12px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--card-bg);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* --- Barra de Filtros --- */
+        .filter-section {
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .search-container {
+            position: relative;
+            flex-grow: 1;
+            min-width: 250px;
+        }
+
+        input[type="text"], select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-action:hover { background-color: var(--primary-hover); }
+
+        /* --- Tabela Estilo Planilha --- */
+        .main-content {
+            flex-grow: 1;
+            overflow: auto;
+            padding: 1.5rem 2rem;
+        }
+
+        .table-wrapper {
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: auto;
+            max-height: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 1500px; /* Forçar scroll horizontal para parecer planilha */
+        }
+
+        th {
+            background: #f1f5f9;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            text-align: left;
+            padding: 12px 15px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border);
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        tr:hover td { background-color: #f8fafc; }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: var(--primary-light);
+            color: var(--primary);
+            margin-right: 4px;
+        }
+
+        .badge-success { background: #dcfce7; color: #15803d; }
+        .badge-orange { background: #ffedd5; color: #c2410c; }
+
+        /* --- Modal Editor --- */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            border-radius: var(--radius-md);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .full-width { grid-column: span 3; }
+
+        .dynamic-list {
+            margin-top: 10px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .dynamic-item {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-save { background: var(--success); color: white; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .btn-cancel { background: #e2e8f0; color: var(--text-main); border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; }
+
+        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary); }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+            .filter-section { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🎓 Painel de Universidades (EUA)</h1>
+    <div id="syncStatus" style="font-size: 0.8rem; color: var(--success); display: none;">Sincronizado</div>
+</header>
+
+<div class="filter-section">
+    <div class="filter-group search-container">
+        <label class="filter-label">Pesquisa Global</label>
+        <input type="text" id="globalSearch" placeholder="Nome, cidade, estado ou coach...">
+    </div>
+    
+    <div class="filter-group">
+        <label class="filter-label">Estado</label>
+        <select id="filterState">
+            <option value="">Todos</option>
+        </select>
+    </div>
+
+    <div class="filter-group">
+        <label class="filter-label">Tipo</label>
+        <select id="filterType">
+            <option value="">Todos</option>
+            <option value="Junior College">Junior College</option>
+            <option value="4-Year University">4-Year University</option>
+            <option value="Private">Private</option>
+            <option value="Public">Public</option>
+        </select>
+    </div>
+
+    <div class="filter-group">
+        <label class="filter-label">Duolingo</label>
+        <select id="filterDuolingo">
+            <option value="">Qualquer Score</option>
+            <option value="80">80+</option>
+            <option value="90">90+</option>
+            <option value="100">100+</option>
+            <option value="110">110+</option>
+        </select>
+    </div>
+
+    <button class="btn-action" style="margin-top: auto;" id="btnNew">
+        <span>+</span> Adicionar Nova
+    </button>
+</div>
+
+<div class="main-content">
+    <div class="table-wrapper">
+        <table id="mainTable">
+            <thead>
+                <tr>
+                    <th>Ações</th>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th>Localização</th>
+                    <th>Duolingo</th>
+                    <th>Jogos</th>
+                    <th>Coaches</th>
+                    <th>Custo Total</th>
+                    <th>Bolsa</th>
+                    <th>Tuition</th>
+                    <th>R&B</th>
+                    <th>Discord</th>
+                    <th>Twitter/X</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Conteúdo via JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal de Edição -->
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Editar Instituição</h2>
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-id">
+            
+            <div class="form-grid">
+                <!-- Informações Básicas -->
+                <div class="form-group full-width">
+                    <label>Nome da Instituição</label>
+                    <input type="text" id="edit-nome">
+                </div>
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <input type="text" id="edit-tipo" placeholder="ex: Junior College">
+                </div>
+                <div class="form-group">
+                    <label>Cidade</label>
+                    <input type="text" id="edit-cidade">
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <input type="text" id="edit-estado">
+                </div>
+
+                <!-- Acadêmico -->
+                <div class="form-group">
+                    <label>Score Duolingo</label>
+                    <input type="text" id="edit-duolingo">
+                </div>
+                <div class="form-group">
+                    <label>NJCAA</label>
+                    <select id="edit-njcaa">
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Link Admissão (Infos)</label>
+                    <input type="text" id="edit-infos">
+                </div>
+
+                <!-- Financeiro -->
+                <div class="form-group">
+                    <label>Tuition & Fees</label>
+                    <input type="text" id="edit-tuition">
+                </div>
+                <div class="form-group">
+                    <label>Room & Board</label>
+                    <input type="text" id="edit-room">
+                </div>
+                <div class="form-group">
+                    <label>Custo Total</label>
+                    <input type="text" id="edit-custo">
+                </div>
+                <div class="form-group">
+                    <label>Bolsas Disponíveis</label>
+                    <input type="text" id="edit-bolsa">
+                </div>
+                <div class="form-group full-width">
+                    <label>Link de Custos</label>
+                    <input type="text" id="edit-link-custos">
+                </div>
+
+                <!-- Multi-uso: Jogos e Coaches -->
+                <div class="form-group full-width">
+                    <label>Jogos Oferecidos (Multi-uso)</label>
+                    <div class="dynamic-list" id="gamesList"></div>
+                    <button class="btn-action" style="padding: 5px 10px; font-size: 0.75rem; margin-top: 5px;" onclick="addGameField('')">+ Jogo</button>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Equipe de Coaches (Multi-uso)</label>
+                    <div class="dynamic-list" id="coachesList"></div>
+                    <button class="btn-action" style="padding: 5px 10px; font-size: 0.75rem; margin-top: 5px;" onclick="addCoachField('', '', '')">+ Coach</button>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Observações Gerais</label>
+                    <textarea id="edit-obs" rows="3" style="width:100%; border-radius:8px; border:1px solid var(--border); padding:10px; font-family:inherit;"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+            <button class="btn-save" id="saveBtn">Salvar Alterações</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBdUtPoAbOkVCGOBeVRgsq5jZXNOur0f_4",
+        authDomain: "internship-infos.firebaseapp.com",
+        projectId: "internship-infos",
+        storageBucket: "internship-infos.firebasestorage.app",
+        messagingSenderId: "642232016135",
+        appId: "1:642232016135:web:e2b5645ed285dd73a439a2",
+        measurementId: "G-HVFS7M6XEC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const colName = "universities_and_colleges";
+    const colRef = collection(db, colName);
+
+    let universities = [];
+
+    // --- Sincronização em Tempo Real ---
+    onSnapshot(colRef, (snapshot) => {
+        universities = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        populateStateFilter();
+        applyFilters();
+        
+        const syncLabel = document.getElementById('syncStatus');
+        syncLabel.style.display = 'block';
+        setTimeout(() => syncLabel.style.display = 'none', 3000);
+    });
+
+    // --- Filtros ---
+    function populateStateFilter() {
+        const select = document.getElementById('filterState');
+        const currentVal = select.value;
+        const states = [...new Set(universities.map(u => u.localizacao?.estado).filter(Boolean))].sort();
+        
+        select.innerHTML = '<option value="">Todos</option>' + 
+            states.map(s => `<option value="${s}" ${s === currentVal ? 'selected' : ''}>${s}</option>`).join('');
+    }
+
+    function applyFilters() {
+        const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
+        const stateTerm = document.getElementById('filterState').value;
+        const typeTerm = document.getElementById('filterType').value;
+        const duolingoMin = parseInt(document.getElementById('filterDuolingo').value) || 0;
+
+        const filtered = universities.filter(u => {
+            const matchesSearch = !searchTerm || 
+                (u.info_geral?.nome?.toLowerCase().includes(searchTerm) || 
+                 u.localizacao?.cidade?.toLowerCase().includes(searchTerm) ||
+                 u.localizacao?.estado?.toLowerCase().includes(searchTerm));
+            
+            const matchesState = !stateTerm || u.localizacao?.estado === stateTerm;
+            const matchesType = !typeTerm || (u.info_geral?.tipo && u.info_geral.tipo.includes(typeTerm));
+            
+            const duoScore = parseInt(u.academicos?.duolingo) || 0;
+            const matchesDuo = duoScore >= duolingoMin;
+
+            return matchesSearch && matchesState && matchesType && matchesDuo;
+        });
+
+        renderTable(filtered);
+    }
+
+    document.getElementById('globalSearch').oninput = applyFilters;
+    document.getElementById('filterState').onchange = applyFilters;
+    document.getElementById('filterType').onchange = applyFilters;
+    document.getElementById('filterDuolingo').onchange = applyFilters;
+
+    // --- Renderização da Tabela ---
+    function renderTable(data) {
+        const body = document.getElementById('tableBody');
+        body.innerHTML = data.map(u => `
+            <tr>
+                <td>
+                    <button class="btn-action" style="padding: 4px 8px; font-size: 0.7rem;" onclick="openEdit('${u.id}')">EDITAR</button>
+                </td>
+                <td title="${u.info_geral?.nome || ''}"><strong>${u.info_geral?.nome || '-'}</strong></td>
+                <td><span class="badge badge-orange">${u.info_geral?.tipo || 'N/A'}</span></td>
+                <td>${u.localizacao?.cidade || ''}, ${u.localizacao?.estado || ''}</td>
+                <td>${u.academicos?.duolingo || '-'}</td>
+                <td>${(u.esportes_e_jogos?.lista_jogos || []).map(g => `<span class="badge">${g}</span>`).join('')}</td>
+                <td>${(u.contato_coach?.coaches || []).map(c => `<span class="badge badge-success">${c.nome}</span>`).join('')}</td>
+                <td><b>${u.financeiro?.custo_total || '-'}</b></td>
+                <td>${u.financeiro?.bolsa || '-'}</td>
+                <td>${u.financeiro?.tuition_fees || '-'}</td>
+                <td>${u.financeiro?.room_board || '-'}</td>
+                <td>${(u.contato_coach?.coaches || []).map(c => c.discord).filter(Boolean).join(', ') || '-'}</td>
+                <td>${(u.contato_coach?.coaches || []).map(c => c.x).filter(Boolean).join(', ') || '-'}</td>
+            </tr>
+        `).join('');
+    }
+
+    // --- Gerenciamento de Campos Dinâmicos (Jogos e Coaches) ---
+    window.addGameField = (val) => {
+        const container = document.getElementById('gamesList');
+        const div = document.createElement('div');
+        div.className = 'dynamic-item';
+        div.innerHTML = `
+            <input type="text" class="game-input" value="${val}" placeholder="Nome do Jogo" style="flex:1">
+            <button class="close-btn" style="color:var(--danger)" onclick="this.parentElement.remove()">&times;</button>
+        `;
+        container.appendChild(div);
+    };
+
+    window.addCoachField = (nome, discord, x) => {
+        const container = document.getElementById('coachesList');
+        const div = document.createElement('div');
+        div.className = 'dynamic-item';
+        div.innerHTML = `
+            <input type="text" class="coach-nome" value="${nome}" placeholder="Nome" style="flex:2">
+            <input type="text" class="coach-discord" value="${discord}" placeholder="Discord" style="flex:1">
+            <input type="text" class="coach-x" value="${x}" placeholder="X / Twitter" style="flex:1">
+            <button class="close-btn" style="color:var(--danger)" onclick="this.parentElement.remove()">&times;</button>
+        `;
+        container.appendChild(div);
+    };
+
+    // --- Modal Logic ---
+    window.openEdit = (id) => {
+        const uni = id ? universities.find(u => u.id === id) : null;
+        document.getElementById('edit-id').value = id || '';
+        document.getElementById('modalTitle').innerText = id ? 'Editar Instituição' : 'Adicionar Nova Instituição';
+        
+        // Populate fields
+        document.getElementById('edit-nome').value = uni?.info_geral?.nome || '';
+        document.getElementById('edit-tipo').value = uni?.info_geral?.tipo || '';
+        document.getElementById('edit-cidade').value = uni?.localizacao?.cidade || '';
+        document.getElementById('edit-estado').value = uni?.localizacao?.estado || '';
+        document.getElementById('edit-duolingo').value = uni?.academicos?.duolingo || '';
+        document.getElementById('edit-njcaa').value = uni?.esportes_e_jogos?.njcaa || 'Sim';
+        document.getElementById('edit-infos').value = uni?.academicos?.site_admissao || '';
+        document.getElementById('edit-tuition').value = uni?.financeiro?.tuition_fees || '';
+        document.getElementById('edit-room').value = uni?.financeiro?.room_board || '';
+        document.getElementById('edit-custo').value = uni?.financeiro?.custo_total || '';
+        document.getElementById('edit-bolsa').value = uni?.financeiro?.bolsa || '';
+        document.getElementById('edit-link-custos').value = uni?.financeiro?.link_custos || '';
+        document.getElementById('edit-obs').value = uni?.info_geral?.descricao || '';
+
+        // Dynamic Lists
+        document.getElementById('gamesList').innerHTML = '';
+        (uni?.esportes_e_jogos?.lista_jogos || []).forEach(g => addGameField(g));
+
+        document.getElementById('coachesList').innerHTML = '';
+        (uni?.contato_coach?.coaches || []).forEach(c => addCoachField(c.nome, c.discord, c.x));
+
+        document.getElementById('editModal').style.display = 'flex';
+    };
+
+    window.closeModal = () => {
+        document.getElementById('editModal').style.display = 'none';
+    };
+
+    document.getElementById('btnNew').onclick = () => openEdit('');
+
+    // --- Save Logic ---
+    document.getElementById('saveBtn').onclick = async () => {
+        const id = document.getElementById('edit-id').value;
+        
+        // Coletar listas dinâmicas
+        const games = Array.from(document.querySelectorAll('.game-input')).map(i => i.value).filter(Boolean);
+        const coaches = Array.from(document.querySelectorAll('#coachesList .dynamic-item')).map(div => ({
+            nome: div.querySelector('.coach-nome').value,
+            discord: div.querySelector('.coach-discord').value,
+            x: div.querySelector('.coach-x').value
+        })).filter(c => c.nome);
+
+        const data = {
+            info_geral: {
+                nome: document.getElementById('edit-nome').value,
+                tipo: document.getElementById('edit-tipo').value,
+                descricao: document.getElementById('edit-obs').value
+            },
+            localizacao: {
+                cidade: document.getElementById('edit-cidade').value,
+                estado: document.getElementById('edit-estado').value
+            },
+            academicos: {
+                duolingo: document.getElementById('edit-duolingo').value,
+                site_admissao: document.getElementById('edit-infos').value
+            },
+            financeiro: {
+                tuition_fees: document.getElementById('edit-tuition').value,
+                room_board: document.getElementById('edit-room').value,
+                custo_total: document.getElementById('edit-custo').value,
+                bolsa: document.getElementById('edit-bolsa').value,
+                link_custos: document.getElementById('edit-link-custos').value
+            },
+            esportes_e_jogos: {
+                njcaa: document.getElementById('edit-njcaa').value,
+                lista_jogos: games
+            },
+            contato_coach: {
+                coaches: coaches
+            }
+        };
+
+        try {
+            if (id) {
+                await updateDoc(doc(db, colName, id), data);
+            } else {
+                await addDoc(colRef, data);
+            }
+            closeModal();
+        } catch (e) {
+            alert("Erro ao salvar: " + e.message);
+        }
+    };
+
+    // Close on click outside
+    window.onclick = (e) => {
+        if(e.target == document.getElementById('editModal')) closeModal();
+    };
+
+</script>
+
+</body>
+</html>
