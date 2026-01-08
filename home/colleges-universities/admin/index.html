@@ -160,18 +160,18 @@
     </form>
 </div>
 
-<!-- CABEÇALHO PRINCIPAL -->
+<!-- CABEÇALHO -->
 <header>
     <div class="brand"><h1>PORTAL <span style="font-weight: 300; opacity: 0.6;">UNIVERSITÁRIO v3</span></h1></div>
     <div style="display: flex; gap: 16px; align-items: center;">
-        <div id="syncStatus" style="font-size: 9px; color: var(--text-secondary); font-weight: 800; display: none; align-items: center; gap:4px;"><span style="color: #22c55e;">●</span> ATUALIZADO</div>
+        <div id="syncStatus" style="font-size: 9px; color: var(--text-secondary); font-weight: 800; display: none; align-items: center; gap:4px;"><span style="color: #22c55e;">●</span> SINCRONIZADO</div>
         <button id="btnSettings" class="btn btn-outline" style="padding: 8px; border-radius: 50%;" title="Configurações API"><i data-lucide="settings" size="16"></i></button>
         <button id="themeToggle" class="btn btn-outline" style="padding: 8px; border-radius: 50%;"><i data-lucide="sun" size="16"></i></button>
         <button class="btn btn-primary" id="btnNew"><i data-lucide="plus" size="16"></i> Adicionar</button>
     </div>
 </header>
 
-<!-- BARRA DE FERRAMENTAS -->
+<!-- TOOLBAR -->
 <div class="toolbar">
     <div class="filters-row">
         <div class="filters-group">
@@ -181,12 +181,13 @@
         <div class="filters-group">
             <div id="resultsCount" style="font-size: 10px; font-weight: 800; color: var(--text-secondary); align-self: center;">0 REGISTROS</div>
             <button class="btn btn-outline" id="btnExport"><i data-lucide="download" size="14"></i> Exportar</button>
-            <button class="btn btn-outline" id="btnRefresh" style="padding: 8px;"><i data-lucide="refresh-cw" size="14"></i></button>
+            <!-- Botão de Refresh Manual para economizar leituras no Firebase -->
+            <button class="btn btn-outline" id="btnManualRefresh" style="padding: 8px;" title="Atualizar Dados do Firebase"><i data-lucide="refresh-cw" size="14"></i></button>
         </div>
     </div>
 </div>
 
-<!-- TABELA DE DADOS -->
+<!-- CONTEÚDO -->
 <div class="content">
     <div class="table-container">
         <table id="mainTable">
@@ -209,7 +210,7 @@
     </div>
 </div>
 
-<!-- MODAL: CONFIGURAÇÕES DE API -->
+<!-- MODAL CONFIGS -->
 <div class="modal" id="settingsModal">
     <div class="modal-card" style="max-width: 450px;">
         <div class="modal-body">
@@ -227,7 +228,7 @@
     </div>
 </div>
 
-<!-- MODAL: REGISTRO DE UNIVERSIDADE (COMPLETO) -->
+<!-- MODAL EDIT -->
 <div class="modal" id="editModal">
     <div class="modal-card">
         <div class="modal-body">
@@ -238,7 +239,6 @@
             
             <input type="hidden" id="edit-id">
             
-            <!-- 1. Identidade -->
             <div class="grid-row grid-2">
                 <div class="input-box"><label>Instituição</label><div style="display:flex; gap:8px;"><input type="text" id="edit-nome" class="control" style="flex:1;"><button class="btn btn-ai" id="btnAiResearch" title="Pesquisa Inteligente ✨" style="padding: 8px;"><i data-lucide="sparkles" size="14"></i></button></div></div>
                 <div class="input-box"><label>Tipo</label><input type="text" id="edit-tipo" class="control" list="list-tipos"></div>
@@ -249,23 +249,20 @@
                 <div class="input-box"><label>Estado</label><input type="text" id="edit-estado" class="control"></div>
             </div>
 
-            <!-- 2. Académico -->
             <div class="section-title">Académico & Admissão</div>
             <div class="grid-row grid-3">
                 <div class="input-box"><label>Cursos / Majors</label><input type="text" id="edit-cursos" class="control"></div>
                 <div class="input-box"><label>Duolingo Score</label><input type="text" id="edit-duolingo" class="control"></div>
-                <div class="input-box"><label>Link Admissão (Infos)</label><input type="text" id="edit-infos" class="control" placeholder="https://..."></div>
+                <div class="input-box"><label>Link Admissão</label><input type="text" id="edit-infos" class="control"></div>
             </div>
 
-            <!-- 3. Esportes -->
             <div class="section-title">Esportes & Recrutamento</div>
             <div class="grid-row grid-3">
                 <div class="input-box"><label>Jogos (Ex: Valorant, CS2)</label><input type="text" id="edit-games" class="control"></div>
-                <div class="input-box"><label>NJCAA</label><select id="edit-njcaa" class="control"><option value="Não">Não</option><option value="Sim">Sim</option><option value="N/A">N/A</option></select></div>
+                <div class="input-box"><label>NJCAA</label><select id="edit-njcaa" class="control"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
                 <div class="input-box"><label>Link Esports</label><input type="text" id="edit-link-esports" class="control"></div>
             </div>
 
-            <!-- 4. Contacto Coach -->
             <div class="section-title">Contacto Coach</div>
             <div class="grid-row grid-3">
                 <div class="input-box"><label>Nome Coach</label><input type="text" id="edit-coach" class="control"></div>
@@ -273,21 +270,19 @@
                 <div class="input-box"><label>X / Twitter</label><input type="text" id="edit-x" class="control"></div>
             </div>
 
-            <!-- 5. Financeiro -->
             <div class="section-title">Financeiro & Custos</div>
             <div class="grid-row" style="grid-template-columns: 1fr 1fr 1fr 2fr;">
-                <div class="input-box"><label>Tuition & Fee ($)</label><input type="text" id="edit-tuition" class="control calc-trigger" placeholder="0"></div>
-                <div class="input-box"><label>Room & Board ($)</label><input type="text" id="edit-room" class="control calc-trigger" placeholder="0"></div>
-                <div class="input-box"><label>Bolsa ($)</label><input type="text" id="edit-bolsa" class="control calc-trigger" placeholder="0"></div>
+                <div class="input-box"><label>Tuition & Fee ($)</label><input type="text" id="edit-tuition" class="control calc-trigger"></div>
+                <div class="input-box"><label>Room & Board ($)</label><input type="text" id="edit-room" class="control calc-trigger"></div>
+                <div class="input-box"><label>Bolsa ($)</label><input type="text" id="edit-bolsa" class="control calc-trigger"></div>
                 <div class="calc-box">
                     <label style="font-size: 9px; font-weight: 800;">TOTAL ANUAL ESTIMADO</label>
                     <div id="display-total" class="total-display">$ 0.00</div>
                     <input type="hidden" id="edit-custo-total">
                 </div>
             </div>
-            <div class="input-box"><label>Link Custos</label><input type="text" id="edit-link-custos" class="control" placeholder="https://..."></div>
+            <div class="input-box"><label>Link Custos</label><input type="text" id="edit-link-custos" class="control"></div>
 
-            <!-- 6. Notas -->
             <div class="input-box" style="margin-top: 1rem;"><label>Observações</label><textarea id="edit-obs" rows="2" class="control"></textarea></div>
 
             <div style="display:flex; justify-content: flex-end; gap: 12px; margin-top: 2rem; border-top: 1px solid var(--border-strong); padding-top: 1.5rem;">
@@ -299,28 +294,48 @@
 </div>
 
 <script type="module">
-    // IMPORTAÇÕES FIREBASE
+    // FIREBASE
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, doc, updateDoc, addDoc, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // CONFIGURAÇÃO FIREBASE
     const firebaseConfig = { apiKey: "AIzaSyBdUtPoAbOkVCGOBeVRgsq5jZXNOur0f_4", authDomain: "internship-infos.firebaseapp.com", projectId: "internship-infos", storageBucket: "internship-infos.firebasestorage.app", messagingSenderId: "642232016135", appId: "1:642232016135:web:e2b5645ed285dd73a439a2" };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const colName = "universities_and_colleges";
     const colRef = collection(db, colName);
 
-    // ESTADO DA APLICAÇÃO
     let universities = [];
     let currentFiltered = [];
     let selectedIds = new Set();
     const geminiModel = "gemini-2.5-flash-preview-09-2025";
     let currentDollarRate = 5.0;
 
-    // GESTÃO DE CHAVE API
     function getApiKey() { return localStorage.getItem('gemini_api_key') || ""; }
 
-    // --- AGENTE IA: LÓGICA DE CHAT ---
+    // --- CARREGAMENTO OTIMIZADO (GET AO INVÉS DE SNAPSHOT) ---
+    // Usar getDocs reduz drasticamente as leituras em comparação ao Realtime Listener (onSnapshot)
+    async function fetchData() {
+        try {
+            const sync = document.getElementById('syncStatus');
+            sync.innerHTML = '<span style="color: #eab308;">●</span> SINCRONIZANDO...';
+            sync.style.display = 'flex';
+            
+            const snapshot = await getDocs(colRef);
+            universities = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            
+            const states = [...new Set(universities.map(u => u.localizacao?.estado).filter(Boolean))].sort();
+            document.getElementById('filterState').innerHTML = '<option value="">Todos</option>' + states.map(s => `<option value="${s}">${s}</option>`).join('');
+            
+            applyFilters();
+            
+            sync.innerHTML = '<span style="color: #22c55e;">●</span> SINCRONIZADO';
+            setTimeout(() => sync.style.display = 'none', 3000);
+        } catch (e) {
+            console.error("Erro ao ler Firebase:", e);
+        }
+    }
+
+    // --- AGENTE IA ---
     let chatHistory = [];
     window.toggleChat = () => {
         const win = document.getElementById('aiChatWindow');
@@ -335,23 +350,23 @@
         const text = input.value.trim();
         const key = getApiKey();
         if(!text) return;
-        if(!key) { addMessage("Configure a sua API Key nas definições primeiro.", "bot"); return; }
+        if(!key) { addMessage("Configure a sua API Key primeiro.", "bot"); return; }
 
         addMessage(text, 'user');
         input.value = '';
         const loader = addMessage('<div class="spinner" style="border-top-color:var(--ai-color)"></div> Consultando base de dados...', 'bot');
         
         try {
-            const dbContext = universities.map(u => ({
+            // Otimização: Enviamos apenas o básico para não estourar o limite de tokens da IA
+            const dbContext = universities.slice(0, 50).map(u => ({
                 nome: u.info_geral?.nome,
-                local: `${u.localizacao?.cidade}, ${u.localizacao?.estado}`,
-                custo: u.financeiro?.custo_total,
-                jogos: Array.isArray(u.esportes_e_jogos?.lista_jogos) ? u.esportes_e_jogos.lista_jogos.join(', ') : ''
+                local: u.localizacao?.estado,
+                custo: u.financeiro?.custo_total
             }));
 
-            const systemPrompt = `Você é um Especialista em Recrutamento Universitário e Esports. 
-            HIERARQUIA: 1. Verifique dados locais: ${JSON.stringify(dbContext)}. 2. Se não encontrar, use pesquisa Google.
-            LIMITAÇÃO: Apenas universidades e esports. Responda em Português usando Markdown (**negrito**, listas, títulos).`;
+            const systemPrompt = `Você é um Especialista em Recrutamento Universitário. 
+            HIERARQUIA: 1. Use dados locais (amostra): ${JSON.stringify(dbContext)}. 2. Use busca Google para o restante.
+            Responda em Português usando Markdown.`;
 
             const response = await callGemini(text, false, systemPrompt, true, key);
             loader.remove();
@@ -372,10 +387,7 @@
     }
 
     async function callGemini(prompt, isJson, sysInst, useSearch, key) {
-        const payload = { 
-            contents: [{ parts: [{ text: prompt }] }], 
-            systemInstruction: sysInst ? { parts: [{ text: sysInst }] } : undefined 
-        };
+        const payload = { contents: [{ parts: [{ text: prompt }] }], systemInstruction: sysInst ? { parts: [{ text: sysInst }] } : undefined };
         if (isJson) payload.generationConfig = { responseMimeType: "application/json" };
         if (useSearch) payload.tools = [{ "google_search": {} }];
         
@@ -389,7 +401,7 @@
         return result.candidates?.[0]?.content?.parts?.[0]?.text;
     }
 
-    // --- DASHBOARD: LÓGICA DE DADOS ---
+    // --- DASHBOARD ---
     async function fetchDollarRate() {
         try {
             const r = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL');
@@ -397,16 +409,6 @@
             currentDollarRate = parseFloat(d.USDBRL.ask);
         } catch {}
     }
-    fetchDollarRate();
-
-    onSnapshot(colRef, (snapshot) => {
-        universities = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const states = [...new Set(universities.map(u => u.localizacao?.estado).filter(Boolean))].sort();
-        document.getElementById('filterState').innerHTML = '<option value="">Todos</option>' + states.map(s => `<option value="${s}">${s}</option>`).join('');
-        applyFilters();
-        const sync = document.getElementById('syncStatus');
-        sync.style.display = 'flex'; setTimeout(() => sync.style.display = 'none', 3000);
-    });
 
     function applyFilters() {
         const search = document.getElementById('globalSearch').value.toLowerCase();
@@ -454,9 +456,9 @@
         lucide.createIcons();
     }
 
-    window.toggleSelect = (id) => { if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id); renderTable(currentFiltered); };
+    window.toggleSelect = (id) => { if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id); };
 
-    // --- CONFIGURAÇÕES & MODAIS ---
+    // SETTINGS
     document.getElementById('btnSettings').onclick = () => {
         document.getElementById('inputApiKey').value = getApiKey();
         document.getElementById('apiTestStatus').style.display = 'none';
@@ -467,24 +469,20 @@
         const key = document.getElementById('inputApiKey').value.trim();
         const status = document.getElementById('apiTestStatus');
         if(!key) return;
-
-        status.className = 'loading'; status.innerHTML = "Validando conexão..."; status.style.display = 'block';
+        status.className = 'loading'; status.innerHTML = "Validando..."; status.style.display = 'block';
         try {
-            const test = await callGemini("Olá! Confirme que está funcionando.", false, "Teste", false, key);
+            await callGemini("Oi", false, "Teste", false, key);
             localStorage.setItem('gemini_api_key', key);
-            status.className = 'success'; status.innerHTML = `<strong>Sucesso!</strong> Chave guardada.`;
-            setTimeout(() => document.getElementById('settingsModal').style.display = 'none', 2000);
-        } catch (e) {
-            status.className = 'error'; status.innerHTML = "Chave inválida.";
-        }
+            status.className = 'success'; status.innerHTML = "Sucesso!";
+            setTimeout(() => document.getElementById('settingsModal').style.display = 'none', 1500);
+        } catch (e) { status.className = 'error'; status.innerHTML = "Chave inválida."; }
     };
 
-    // LÓGICA DE FORMULÁRIO (RESTAURO COMPLETO)
+    // FORM
     window.openEdit = (id) => {
         const u = id ? universities.find(x => x.id === id) : null;
         document.getElementById('edit-id').value = id || '';
         document.getElementById('modalTitle').innerText = id ? 'Editar Registro' : 'Novo Registro';
-
         document.getElementById('edit-nome').value = u?.info_geral?.nome || '';
         document.getElementById('edit-tipo').value = u?.info_geral?.tipo || '';
         document.getElementById('edit-cidade').value = u?.localizacao?.cidade || '';
@@ -495,18 +493,15 @@
         document.getElementById('edit-games').value = Array.isArray(u?.esportes_e_jogos?.lista_jogos) ? u.esportes_e_jogos.lista_jogos.join(', ') : '';
         document.getElementById('edit-njcaa').value = u?.esportes_e_jogos?.njcaa || 'Não';
         document.getElementById('edit-link-esports').value = u?.esportes_e_jogos?.link_esports || '';
-        
         const coach = u?.contato_coach?.coaches?.[0] || {};
         document.getElementById('edit-coach').value = coach.nome || '';
         document.getElementById('edit-discord').value = coach.discord || '';
         document.getElementById('edit-x').value = coach.x || '';
-        
         document.getElementById('edit-tuition').value = u?.financeiro?.tuition_fees || '';
         document.getElementById('edit-room').value = u?.financeiro?.room_board || '';
         document.getElementById('edit-bolsa').value = u?.financeiro?.bolsa || '';
         document.getElementById('edit-link-custos').value = u?.financeiro?.link_custos || '';
         document.getElementById('edit-obs').value = u?.info_geral?.descricao || '';
-
         calculateTotal();
         document.getElementById('editModal').style.display = 'flex';
         lucide.createIcons();
@@ -531,17 +526,20 @@
             financeiro: { tuition_fees: document.getElementById('edit-tuition').value, room_board: document.getElementById('edit-room').value, bolsa: document.getElementById('edit-bolsa').value, custo_total: document.getElementById('edit-custo-total').value, link_custos: document.getElementById('edit-link-custos').value },
             contato_coach: { coaches: [{ nome: document.getElementById('edit-coach').value, discord: document.getElementById('edit-discord').value, x: document.getElementById('edit-x').value }] }
         };
-        try { id ? await updateDoc(doc(db, colName, id), data) : await addDoc(colRef, data); closeModal(); } catch (e) { alert("Erro ao salvar."); }
+        try { 
+            id ? await updateDoc(doc(db, colName, id), data) : await addDoc(colRef, data); 
+            closeModal();
+            fetchData(); // Atualiza a lista após salvar
+        } catch (e) { alert("Erro ao salvar."); }
     };
 
-    // PESQUISA IA NO MODAL
     document.getElementById('btnAiResearch').onclick = async () => {
         const key = getApiKey();
         const name = document.getElementById('edit-nome').value;
         if(!name || !key) return;
         document.getElementById('aiToast').classList.add('show');
         try {
-            const prompt = `Research university "${name}". Return JSON: {cidade, estado, tipo, cursos, duolingo, tuition, room, njcaa, obs}. Use exact keys.`;
+            const prompt = `Research university "${name}". Return JSON: {cidade, estado, tipo, cursos, duolingo, tuition, room, njcaa, obs}.`;
             const raw = await callGemini(prompt, true, "Pesquisador", true, key);
             const data = JSON.parse(raw.replace(/```json|```/g, ''));
             document.getElementById('edit-cidade').value = data.cidade || '';
@@ -561,12 +559,17 @@
     document.getElementById('btnNew').onclick = () => openEdit('');
     document.getElementById('globalSearch').oninput = applyFilters;
     document.getElementById('filterState').onchange = applyFilters;
+    document.getElementById('btnManualRefresh').onclick = fetchData;
     document.getElementById('themeToggle').onclick = () => {
         const next = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         document.body.setAttribute('data-theme', next);
         document.querySelector('#themeToggle i').setAttribute('data-lucide', next === 'dark' ? 'sun' : 'moon');
         lucide.createIcons();
     };
+
+    // Inicialização
+    fetchDollarRate();
+    fetchData(); // Carrega os dados apenas uma vez ao abrir
     lucide.createIcons();
 </script>
 </body>
